@@ -46,6 +46,7 @@ namespace Backend.Controllers
         [Route("{id}")]
         public async Task<IResult> UpdateBook([FromRoute] string id, [FromBody] AssetEntity model)
         {
+            model.Id = Convert.ToInt32(id);
             var save = await _genericService.UpdateAssetDetail(model);
             if (save == null)
             {
