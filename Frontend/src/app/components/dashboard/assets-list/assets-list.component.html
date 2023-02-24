@@ -1,0 +1,89 @@
+<div class="assets-list-main">
+  <select class="form-select form-select-md">
+    <option>All Sites</option>
+  </select>
+
+  <div class="row">
+    <div class="col col-sm-6">
+      <div class="input-group mb-3 mt-3">
+        <input type="text" class="form-control" placeholder="Enter location.">
+        <button class="btn btn-outline-dark">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="col col-sm-6">
+      <p class="result">
+        1488 Assets found
+      </p>
+    </div>
+  </div>
+
+  <div class="list">
+    <div class="list-item" *ngFor="let item of perPageList" data-bs-toggle="modal" data-bs-target="#commandSend">
+      <div class="asset-info">
+        <p class="asset-id">
+          wdf4157031u248192
+        </p>
+        <p class="asset-desc">
+          Load Carner: Gearbox, WT28
+        </p>
+      </div>
+      <p class="asset-location">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Rotter dam, Harbour
+      </p>
+    </div>
+    <div class="list-footer">
+      <p class="label">Rows Per Page</p>
+      <div class="indicator">
+          {{this.perPageCount * this.pageIndex + 1}} - {{this.perPageCount * this.pageIndex + this.perPageList.length}} of {{assetList.length}}
+          <div class="prev-btn" (click)="goToPrev()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+          </div>
+          <div class="next-btn" (click)="goToNext()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal" id="commandSend">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Command / Control</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <p class="command_line {{this.select_fill_oil_cmd ? 'active' : ''}}" (click)="this.select_fill_oil_cmd = !this.select_fill_oil_cmd">
+            <svg *ngIf="this.select_fill_oil_cmd" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+            Fill Oil
+          </p>
+          <p class="command_line {{this.select_repair_tank_cmd ? 'active' : ''}}" (click)="this.select_repair_tank_cmd = !this.select_repair_tank_cmd">
+            <svg *ngIf="this.select_repair_tank_cmd" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+            Repair Tank
+          </p>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="submitCommand()">Submit</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

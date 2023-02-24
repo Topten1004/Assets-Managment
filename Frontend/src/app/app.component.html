@@ -1,0 +1,45 @@
+<div class="app-main">
+  <router-outlet></router-outlet>
+  <!-- <div class="point-list">
+    <div class="point-item" *ngFor="let point of points; let i = index" (click)="showEndpointInfo(point)">
+      <div class="endpoint-data">
+        <div class="country-div">
+          <flag [code]="point.country_code" [size]="'md'"></flag>
+          <p class="country">{{getCountryName(point.country_code)}}</p>
+        </div>
+        <p class="isp">ISP: {{point.ISP}}</p>
+        <p class="ping_time">Ping Time: {{point.ping_time}}</p>
+      </div>
+      <div class="endpoint-ip">
+        {{point.endpoint}}
+        <div class="tick-img">
+          <img src="{{point.is_block ? './assets/images/map-marker-disable.png' : './assets/images/map-marker-enable.png'}}" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="data-info" *ngIf="isShowDataInfo">
+    <button type="button" (click)="isShowDataInfo = !isShowDataInfo">Back to map view</button>
+
+    <div class="data-info-header">
+      <flag [code]="current_info.country_code" [size]="'md'"></flag>
+      <div class="country-div">
+        <p class="country-name">{{getCountryName(current_info.country_code)}}</p>
+        <p class="isp">{{current_info.ISP}}</p>
+      </div>
+    </div>
+
+    <div class="data-info-body">
+      <p>IP : {{current_info.endpoint}}</p>
+      <p>Ping Time : {{current_info.ping_time}}</p>
+      <p>Longitude : {{current_info.longitude}}</p>
+      <p>Latitude : {{current_info.Latitude}}</p>
+      <p>ISP : {{current_info.ISP}}</p>
+      <p>Blocked : {{current_info.is_block? "Yes" : "No"}}</p>
+    </div>
+  </div> -->
+
+</div>
+
+

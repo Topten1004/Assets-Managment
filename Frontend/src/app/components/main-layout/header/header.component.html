@@ -1,0 +1,49 @@
+<div class="header-main">
+  <div class="header-logo">
+    Assets Command / Control Center
+  </div>
+  <div class="dropdown">
+    <div class="avatar dropdown-toggle" data-bs-toggle="dropdown">
+      <img src="/assets/images/avatar.jpg" />
+    </div>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#changePassword" href="#">Change Password</a></li>
+      <li><a class="dropdown-item" href="/auth/signin">Sign Out</a></li>
+    </ul>
+  </div>
+
+
+  <div class="modal" id="changePassword">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Change Password</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <form >
+            <div class="mb-3 mt-3">
+              <label for="change_pwd" class="form-label">New Pasword:</label>
+              <input type="text" class="form-control" id="change_pwd" placeholder="Enter New Pasword" name="change_pwd">
+            </div>
+            <div class="mb-3">
+              <label for="change_pwd" class="form-label">Confirm New Password:</label>
+              <input type="text" class="form-control" id="change_pwd" placeholder="Retype New Password" name="change_pwd">
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Change</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

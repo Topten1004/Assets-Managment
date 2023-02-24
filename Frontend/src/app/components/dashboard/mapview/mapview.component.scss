@@ -1,0 +1,43 @@
+.map-main {
+  border : 2px solid #009688;
+  height : 100%;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 5px;
+
+  .map-container {
+    width : 100%;
+  }
+
+  agm-map {
+    height: 800px;
+    width: 100%;
+  }
+
+  .agm-info-window {
+    background-color: #ffffffc2;
+    color: black;
+    font-weight: bold;
+
+    padding: 10px;
+
+    .agm-info-header {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+
+      p {
+        margin: 0px;
+      }
+
+      padding-bottom: 10px;
+      border-bottom: 2px solid lightgray;
+    }
+
+    .agm-info-body {
+      padding-top: 10px;
+      color: blue;
+      text-align: right;
+    }
+  }
+}

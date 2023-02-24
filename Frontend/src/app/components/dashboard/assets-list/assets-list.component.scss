@@ -1,0 +1,108 @@
+.assets-list-main {
+  p {
+    margin: 0px;
+  }
+
+  .row {
+    .col {
+      display: flex;
+      align-items: center;
+      .result {
+        color: gray;
+      }
+    }
+  }
+
+  .list {
+    border-top: 2px solid #009688;
+    .list-item {
+      transition: 0.2s;
+      padding-left: 5px;
+      padding-right: 5px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid gray;
+      cursor: pointer;
+
+      .asset-info {
+        .asset-id {
+          color : #009688;
+          font-weight: bold;
+        }
+        .asset-desc {
+          color : gray;
+          font-size: 13px;
+        }
+      }
+
+      .asset-location {
+        color : black;
+        font-weight: bold;
+        text-align: left;
+        font-size: 13px;
+      }
+    }
+
+    .list-item:hover {
+      background-color: lightgray;
+    }
+    .list-footer {
+      .label {
+        color : gray;
+      }
+      .indicator {
+        color :gray;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .prev-btn:hover{
+          svg {
+            color: #009688;
+          }
+        }
+        .prev-btn {
+          cursor: pointer;
+        }
+        .next-btn:hover {
+          svg {
+            color:#009688;
+          }
+        }
+        .next-btn {
+          cursor: pointer;
+        }
+      }
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .modal-body {
+    .command_line {
+      border : 1px solid gray;
+      border-radius: 20px;
+      transition: 0.2s;
+      padding : 10px;
+      padding-left: 20px;
+      cursor : pointer;
+      margin-bottom: 10px;
+    }
+
+    .command_line:hover {
+      background-color: lightgray;
+    }
+
+    .active {
+      background-color: #009688;
+      color: white;
+    }
+
+    .active:hover {
+      background-color: #009688;
+      border: 1px solid white;
+    }
+  }
+}

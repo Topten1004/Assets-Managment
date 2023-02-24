@@ -1,0 +1,93 @@
+<div class="action-main">
+  <p class="title">Actions</p>
+  <button type="button" data-bs-toggle="modal" data-bs-target="#registerAsset" class="custom-btn">Register Asset Tracker</button>
+  <button type="button" data-bs-toggle="modal" data-bs-target="#configureRule" class="custom-btn">Configure Alert Rule</button>
+
+
+
+  <div class="modal" id="registerAsset">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Register Asset Tracker</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <form >
+            <div class="mb-3 mt-3">
+              <label for="manager" class="form-label">Manager:</label>
+              <select class="form-select form-select-md" id="manager" placeholder="Select Manager" name="manager">
+                <option>John Doe</option>
+                <option>Kevin Tony</option>
+              </select>
+            </div>
+            <div class="mb-3 mt-3">
+              <label for="latitude" class="form-label">Latitude:</label>
+              <input type="text" class="form-control" id="latitude" placeholder="Enter Latitude" name="latitude">
+            </div>
+            <div class="mb-3">
+              <label for="longitude" class="form-label">Longitude:</label>
+              <input type="text" class="form-control" id="longitude" placeholder="Enter Longitude" name="longitude">
+            </div>
+            <div class="mb-3">
+              <label for="amount" class="form-label">Amount:</label>
+              <input type="number" class="form-control" id="amount" placeholder="Enter Amount" name="amount">
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Register</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="configureRule">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Configure Alert Rule</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <form >
+            <div class="mb-3">
+              <label for="limited_amount" class="form-label">Limited Amount:</label>
+              <input type="number" class="form-control" id="limited_amount" placeholder="Enter Limited Amount" name="limited_amount">
+            </div>
+            <div class="mb-3">
+              <label for="expire_period" class="form-label">Expire Period:</label>
+              <div class="period_group ">
+                <input type="number" class="form-control" id="expire_period" placeholder="Enter Expire Period" name="expire_period">
+                <select class="form-select form-select-md" id="unit" placeholder="Select Manager" name="unit">
+                  <option>Year</option>
+                  <option>Month</option>
+                  <option>Day</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Register</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<div class="map-main">
+  <div class="map-container" >
+    <!-- <ejs-maps id='container' #maps style="display:block;" [layers]='layers'
+        (load)="load($event)" useGroupingSeparator="true" tooltipDisplayMode="Click" format='n'>
+         [disableDefaultUI]="false"
+      [mapDraggable]="false"
+[maxZoom]="zoom"
+      [minZoom]="zoom"
+      [tilt]="0"
+        strictBounds: false
+[restriction]="{
+        latLngBounds: {north: 40.43, south: -0, west: -73.935242, east: 0}
+      }"
+      </ejs-maps> -->
+    <agm-map
+
+      [mapTypeId]="'roadmap'"
+      [latitude]="50.30"
+      [longitude]="4.28"
+      [styles]="Styles"
+      [backgroundColor]="'#fffff'"
+      [zoom]="6.5"
+    >
+        <agm-marker
+            *ngFor="let point of points; let i = index"
+            (mouseOver)="clickedMarker(point.country_code, i)"
+            (mouseOut)="current_opened_index = -1"
+            [latitude]="point.latitude"
+            [longitude]="point.longitude"
+            [markerDraggable]="point.is_block ? true : false"
+            [label]="labelOptions"
+            [iconUrl]="point.is_block ? './assets/images/map-marker-enable.png' : './assets/images/alert.gif'"
+        >
+
+          <div style="width : 50px; height:50px; border: 1px solid red;"></div>
+          <agm-info-window
+            [isOpen]="isOpened(i)"
+          >
+            <div class="agm-info-window">
+              <div class="agm-info-header">
+                <flag [code]="point.country_code" [size]="'md'"></flag>
+                <div class="country-div">
+                  <p class="country-name">{{getCountryName(point.country_code)}}</p>
+                  <p class="isp">{{point.ISP}}</p>
+                </div>
+
+              </div>
+              <div class="agm-info-body">
+                {{point.endpoint}}
+              </div>
+            </div>
+          </agm-info-window>
+
+        </agm-marker>
+    </agm-map>
+
+  </div>
+</div>

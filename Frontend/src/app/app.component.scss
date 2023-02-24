@@ -1,0 +1,88 @@
+.app-main {
+  .point-list {
+    border : 1px solid gray;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    width : 30%;
+
+    .point-item:hover {
+      background-color: lightgray;
+      transition: 0.3s;
+    }
+
+    .point-item {
+
+
+      cursor: pointer;
+      border-bottom: 1px solid gray;
+
+      padding : 10px;
+
+      display: flex;
+      gap : 10px;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      .endpoint-data {
+        .country-div {
+          display: flex;
+          align-items: center;
+          gap : 10px;
+
+          padding-bottom: 10px;
+        }
+
+
+        p {
+          margin: 0px;
+        }
+        .country {
+          font-size: 16px;
+          font-family: bold;
+        }
+
+        .isp {
+          font-size: 14px;
+        }
+      }
+
+      .endpoint-ip {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .tick-img {
+          width: 24px;
+          height : 24px;
+        }
+      }
+    }
+  }
+
+  .data-info {
+    border: 1px solid gray;
+    border-radius: 10px;
+    padding: 15px;
+    width: calc(50% - 20px);
+
+    .data-info-header {
+
+      margin-top: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid lightgray;
+
+      p {
+        margin: 0px;
+      }
+
+      display: flex;
+      align-items: flex-start;
+      gap : 10px;
+    }
+  }
+}
+
+

@@ -1,0 +1,41 @@
+.action-main {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  padding: 15px;
+  min-height : 220px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  p {
+    margin: 0px;
+  }
+
+  .title {
+    padding-bottom: 10px;
+    font-size : 25px;
+    font-weight: bold;
+  }
+
+  .custom-btn {
+    background-color : #009688;
+    padding: 10px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .custom-btn:hover {
+    background-color: #096158 !important;
+  }
+
+  #configureRule {
+    .period_group {
+      display: flex;
+      gap : 20px;
+    }
+  }
+}
