@@ -34,17 +34,22 @@ namespace Backend.API.Controllers
         {
             var results = await _genericService.GetUsersList();
             
-            var salt = System.Text.Encoding.UTF8.GetBytes("passwodencryption");
+            var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
 
-            var result = results.Where(x => (x.UserEmail == model.UserEmail && x.Password == Convert.ToBase64String(password)));
+            var hmacSHA1 = new HMACSHA1(salt);
+            var saltedHash = hmacSHA1.ComputeHash(password);
 
-            if (result == null)
+            var comparePassword = Convert.ToBase64String(saltedHash);
+
+            var result = results.Where(x => (x.UserEmail == model.UserEmail && x.Password == comparePassword));
+
+            if (result.Count() == 0)
             {
                 return Results.NotFound();
             }
 
-            string token = GenerateToken(result.FirstOrDefault());
+            string token = GenerateToken(result.First());
 
             return Results.Ok(token);
         }
@@ -57,7 +62,7 @@ namespace Backend.API.Controllers
             UserEntity newUser = new UserEntity();
             newUser.UserEmail = model.UserEmail;
 
-            var salt = System.Text.Encoding.UTF8.GetBytes("passwodencryption");
+            var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
             var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
 
             var hmacSHA1 = new HMACSHA1(salt);

@@ -26,18 +26,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseRouting();
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
 });
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.Run();
