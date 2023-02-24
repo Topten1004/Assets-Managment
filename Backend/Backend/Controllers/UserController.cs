@@ -3,7 +3,12 @@ using Backend.Business.Services;
 using Backend.Controllers;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.API.Controllers
 {
@@ -13,11 +18,13 @@ namespace Backend.API.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IGenericService _genericService;
+        private readonly IConfiguration _config;
 
-        public UserController(ILogger<UserController> logger, IGenericService genericService)
+        public UserController(ILogger<UserController> logger, IGenericService genericService, IConfiguration config)
         {
             _genericService = genericService;
             _logger = logger;
+            _config = config;
         }
 
         // Method to Login
@@ -37,7 +44,9 @@ namespace Backend.API.Controllers
                 return Results.NotFound();
             }
 
-            return Results.Ok(result);
+            string token = GenerateToken(result.FirstOrDefault());
+
+            return Results.Ok(token);
         }
 
         // Method to Sign Up
@@ -64,7 +73,29 @@ namespace Backend.API.Controllers
                 return Results.NotFound();
             }
 
-            return Results.Ok(save);
+            string token = GenerateToken(save);
+
+            return Results.Ok(token);
+        }
+
+        // To generate token
+        private string GenerateToken(UserEntity user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier,user.UserEmail),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
+            };
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(15),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
