@@ -16,7 +16,6 @@ namespace Backend.Data.Entities
         public int Id { get; set; }
         public Command Command { get; set; }
 
-        [ForeignKey(nameof(Command))]
         public int OwnerId { get; set; }
     }
 

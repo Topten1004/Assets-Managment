@@ -14,7 +14,7 @@ namespace Backend.Data.Entities
         [Key]
         public int Id { get; set; }
 
-        public float Oil { get; set; }
+        public float Amount { get; set; }
 
         public float Latitude { get; set; }
 

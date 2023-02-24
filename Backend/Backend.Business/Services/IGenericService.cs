@@ -10,6 +10,7 @@ namespace Backend.Business.Services
 {
     public interface IGenericService
     {
+        #region Asset
         Task<IEnumerable<AssetEntity>> GetAssetsList();
 
         Task<AssetEntity> GetAssetDetailById(int Id);
@@ -19,6 +20,30 @@ namespace Backend.Business.Services
         Task<AssetEntity> UpdateAssetDetail(AssetEntity model);
 
         Task DeleteAsset(int Id);
+        #endregion
+        #region Command
+        Task<IEnumerable<CommandEntity>> GetCommandsList();
+
+        Task<CommandEntity> GetCommandDetailById(int Id);
+
+        Task<CommandEntity> SaveCommandDetail(CommandEntity model);
+
+        Task<CommandEntity> UpdateCommandDetail(CommandEntity model);
+
+        Task DeleteCommand(int Id);
+        #endregion
+        #region User
+        Task<IEnumerable<UserEntity>> GetUsersList();
+
+        Task<UserEntity> GetUserDetailById(int Id);
+
+        Task<UserEntity> SaveUserDetail(UserEntity model);
+
+        Task<UserEntity> UpdateUserDetail(UserEntity model);
+
+        Task DeleteUser(int Id);
+        #endregion 
+
     }
 
     public class GenericService : IGenericService
@@ -30,6 +55,7 @@ namespace Backend.Business.Services
             _assetRepository = assetRepository;
         }
 
+        #region Asset
         public async Task<IEnumerable<AssetEntity>> GetAssetsList()
         {
             return await _assetRepository.GetAssetsList();
@@ -54,5 +80,61 @@ namespace Backend.Business.Services
         {
             await _assetRepository.DeleteAsset(Id);
         }
+        #endregion
+
+        #region Command
+        public async Task<IEnumerable<CommandEntity>> GetCommandsList()
+        {
+            return await _assetRepository.GetCommandsList();
+        }
+
+        public async Task<CommandEntity> GetCommandDetailById(int Id)
+        {
+            return await _assetRepository.GetCommandDetailById(Id);
+        }
+
+        public async Task<CommandEntity> SaveCommandDetail(CommandEntity model)
+        {
+            return await _assetRepository.SaveCommandDetail(model);
+        }
+
+        public async Task<CommandEntity> UpdateCommandDetail(CommandEntity model)
+        {
+            return await _assetRepository.UpdateCommandDetail(model);
+        }
+
+        public async Task DeleteCommand(int Id)
+        {
+            await _assetRepository.DeleteAsset(Id);
+        }
+        #endregion
+
+        #region User
+        public async Task<IEnumerable<UserEntity>> GetUsersList()
+        {
+            return await _assetRepository.GetUsersList();
+        }
+
+        public async Task<UserEntity> GetUserDetailById(int Id)
+        {
+            return await _assetRepository.GetUserDetailById(Id);
+        }
+
+        public async Task<UserEntity> SaveUserDetail(UserEntity model)
+        {
+            return await _assetRepository.SaveUserDetail(model);
+        }
+
+        public async Task<UserEntity> UpdateUserDetail(UserEntity model)
+        {
+            return await _assetRepository.UpdateUserDetail(model);
+        }
+
+        public async Task DeleteUser(int Id)
+        {
+            await _assetRepository.DeleteUser(Id);
+        }
+        #endregion
+
     }
 }
