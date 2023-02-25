@@ -28,6 +28,10 @@ namespace Backend.Data
                 v => v.ToString(),
                 v => (Command)Enum.Parse(typeof(Command), v));
 
+            modelBuilder.Entity<AssetEntity>()
+                .HasOne<UserEntity>(s => s.Owner)
+                .WithMany(g => g.Assets);
+
         }
 
         public DbSet<AssetEntity> Assets { get; set; }

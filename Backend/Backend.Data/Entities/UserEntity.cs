@@ -18,6 +18,8 @@ namespace Backend.Data.Entities
         public string? Password { get; set; }
 
         public Role Role { get; set; }
+
+        public virtual ICollection<AssetEntity> Assets { get; set; }
     }
 
     public enum Role

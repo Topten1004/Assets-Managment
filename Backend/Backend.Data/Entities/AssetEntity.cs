@@ -20,9 +20,9 @@ namespace Backend.Data.Entities
 
         public float Longitude { get; set; }
 
-        public string? Manager { get; set; }
-
         public string? UserEmail { get; set; }
+
+        public UserEntity? Owner { get; set; }
 
     }
 }
