@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection.Emit;
 
 namespace Backend.Data
@@ -26,12 +27,7 @@ namespace Backend.Data
             .Property(e => e.Command)
             .HasConversion(
                 v => v.ToString(),
-                v => (Command)Enum.Parse(typeof(Command), v));
-
-            modelBuilder.Entity<AssetEntity>()
-                .HasOne<UserEntity>(s => s.Owner)
-                .WithMany(g => g.Assets);
-
+                v => (CommandTypes)Enum.Parse(typeof(CommandTypes), v));
         }
 
         public DbSet<AssetEntity> Assets { get; set; }

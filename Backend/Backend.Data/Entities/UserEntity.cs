@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -8,9 +10,10 @@ using System.Threading.Tasks;
 namespace Backend.Data.Entities
 {
     [Table("Users")]
-
     public class UserEntity
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public string? UserEmail { get; set; }
@@ -19,7 +22,6 @@ namespace Backend.Data.Entities
 
         public Role Role { get; set; }
 
-        public virtual ICollection<AssetEntity> Assets { get; set; }
     }
 
     public enum Role

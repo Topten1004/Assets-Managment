@@ -1,7 +1,10 @@
+using AutoMapper;
+using Backend.API.ViewModel;
 using Backend.Business.Services;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -12,11 +15,13 @@ namespace Backend.Controllers
     {
         private readonly ILogger<AssetController> _logger;
         private readonly IGenericService _genericService;
-        
-        public AssetController(ILogger<AssetController> logger, IGenericService genericService)
+        private readonly IMapper _mapper;
+
+        public AssetController(ILogger<AssetController> logger, IGenericService genericService, IMapper mapper)
         {
             _genericService= genericService;
             _logger = logger;
+            _mapper = mapper;
         }
 
         // Method to get the list of the Assets
@@ -41,9 +46,15 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 
-        public async Task<IResult> SaveAssetDetail(AssetEntity model)
+        public async Task<IResult> SaveAssetDetail(AssetVM model)
         {
-            var save = await _genericService.SaveAssetDetail(model);
+            UserEntity currentUser = GetCurrentUser();
+            AssetEntity asset = _mapper.Map<AssetEntity>(model);
+
+            var users = await _genericService.GetUsersList();
+            asset.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+
+            var save = await _genericService.SaveAssetDetail(asset);
             if (save == null)
             {
                 return Results.NotFound();
@@ -57,10 +68,15 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 
-        public async Task<IResult> UpdateBook([FromRoute] string id, [FromBody] AssetEntity model)
+        public async Task<IResult> UpdateAsset([FromRoute] string id, [FromBody] AssetVM model)
         {
-            model.Id = Convert.ToInt32(id);
-            var save = await _genericService.UpdateAssetDetail(model);
+            UserEntity currentUser = GetCurrentUser();
+            AssetEntity asset = _mapper.Map<AssetEntity>(model);
+
+            var users = await _genericService.GetUsersList();
+            asset.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+
+            var save = await _genericService.UpdateAssetDetail(asset);
             if (save == null)
             {
                 return Results.NotFound();
@@ -77,6 +93,25 @@ namespace Backend.Controllers
         {
             await _genericService.DeleteAsset(Convert.ToInt32(Id));
             return Results.Ok();
+        }
+
+        private UserEntity GetCurrentUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                Role role;
+                Enum.TryParse<Role>(userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out role);
+
+                return new UserEntity
+                {
+                    UserEmail = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+                    Role = role
+                };
+            }
+
+            return null;
         }
     }
 }

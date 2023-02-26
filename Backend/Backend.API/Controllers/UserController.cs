@@ -12,6 +12,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Backend.API.Controllers
 {
+    public class AccessToken
+    {
+        public string token { get; set; }
+    }
+
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -54,10 +59,11 @@ namespace Backend.API.Controllers
             return Results.Ok(token);
         }
 
-        // Method to Sign Up
+        // Method to Register Manager
+        [Authorize]
         [HttpPost]
-        [Route("/SignUp")]
-        public async Task<IResult> SignUpUser(SignUpVM model)
+        [Route("/Register")]
+        public async Task<IResult> RegisterManager(SignUpVM model)
         {
             UserEntity newUser = new UserEntity();
             newUser.UserEmail = model.UserEmail;
@@ -82,7 +88,6 @@ namespace Backend.API.Controllers
 
             return Results.Ok(token);
         }
-
         // To generate token
         private string GenerateToken(UserEntity user)
         {
@@ -101,6 +106,25 @@ namespace Backend.API.Controllers
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private UserEntity GetCurrentUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                Role role;
+                Enum.TryParse<Role>(userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out role);
+
+                return new UserEntity
+                {
+                    UserEmail = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+                    Role = role
+                };
+            }
+
+            return null;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Backend.Business.Services;
+﻿using AutoMapper;
+using Backend.Business.Services;
 using Backend.Controllers;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,13 @@ namespace Backend.API.Controllers
     {
         private readonly ILogger<CommandController> _logger;
         private readonly IGenericService _genericService;
+        private readonly IMapper _mapper;
 
-        public CommandController(ILogger<CommandController> logger, IGenericService genericService)
+        public CommandController(ILogger<CommandController> logger, IGenericService genericService, IMapper mapper)
         {
             _genericService = genericService;
             _logger = logger;
+            _mapper = mapper;
         }
 
         // Method to get the list of the Commands
@@ -43,9 +46,10 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> SaveAssetDetail(CommandEntity model)
+        public async Task<IResult> SaveCommandDetail(CommandEntity model)
         {
-            var save = await _genericService.SaveCommandDetail(model);
+            CommandEntity command = _mapper.Map<CommandEntity>(model);
+            var save = await _genericService.SaveCommandDetail(command);
             if (save == null)
             {
                 return Results.NotFound();
@@ -58,7 +62,7 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> UpdateBook([FromRoute] string id, [FromBody] CommandEntity model)
+        public async Task<IResult> UpdateCommand([FromRoute] string id, [FromBody] CommandEntity model)
         {
             model.Id = Convert.ToInt32(id);
             var save = await _genericService.UpdateCommandDetail(model);
@@ -74,9 +78,9 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> DeleteAsset(string Id)
+        public async Task<IResult> DeleteCommand(string Id)
         {
-            await _genericService.DeleteAsset(Convert.ToInt32(Id));
+            await _genericService.DeleteCommand(Convert.ToInt32(Id));
             return Results.Ok();
         }
 

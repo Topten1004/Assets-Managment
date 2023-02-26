@@ -42,7 +42,7 @@ namespace Backend.Business.Services
         Task<UserEntity> UpdateUserDetail(UserEntity model);
 
         Task DeleteUser(int Id);
-        #endregion 
+        #endregion
 
     }
 

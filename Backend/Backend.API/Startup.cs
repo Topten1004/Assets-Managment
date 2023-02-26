@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Reflection;
 
 namespace Backend.API
 {
@@ -22,10 +23,10 @@ namespace Backend.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(
-                option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
-                sqlServerOptionsAction: sqlOptions => {
-                    sqlOptions.EnableRetryOnFailure();
-                }));
+                option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Backend.API")
+            ));
+
+            services.AddAutoMapper(typeof(AutoMapperProfiles));
 
             services.AddAuthentication(options =>
             {

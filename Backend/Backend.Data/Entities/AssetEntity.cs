@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -12,17 +13,19 @@ namespace Backend.Data.Entities
     public class AssetEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
+        public string? TankName { get; set; }
         public float Amount { get; set; }
 
         public float Latitude { get; set; }
 
         public float Longitude { get; set; }
 
-        public string? UserEmail { get; set; }
+        public float Capacity { get; set; }
 
-        public UserEntity? Owner { get; set; }
+        public string? UserEmail { get; set; }
+        public int OwnerId { get; set; }
 
     }
 }

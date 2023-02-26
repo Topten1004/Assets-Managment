@@ -13,13 +13,14 @@ namespace Backend.Data.Entities
     public class CommandEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public Command Command { get; set; }
+        public CommandTypes Command { get; set; }
 
         public int OwnerId { get; set; }
     }
 
-    public enum Command
+    public enum CommandTypes
     {
         None,
         Fill,
