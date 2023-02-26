@@ -18,6 +18,8 @@ namespace Backend.Data.Entities
         public CommandTypes Command { get; set; }
 
         public int OwnerId { get; set; }
+
+        public virtual UserEntity? Owner { get; set; }
     }
 
     public enum CommandTypes

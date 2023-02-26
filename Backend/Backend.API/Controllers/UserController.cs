@@ -60,7 +60,6 @@ namespace Backend.API.Controllers
         }
 
         // Method to Register Manager
-        [Authorize]
         [HttpPost]
         [Route("/Register")]
         public async Task<IResult> RegisterManager(SignUpVM model)
@@ -76,7 +75,7 @@ namespace Backend.API.Controllers
 
             newUser.UserEmail = model.UserEmail;
             newUser.Password = Convert.ToBase64String(saltedHash);
-            newUser.Role = model.Role;
+            newUser.Role = 0;
 
             var save = await _genericService.SaveUserDetail(newUser);
             if (save == null)

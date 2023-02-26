@@ -8,8 +8,11 @@ namespace Backend.API
     {
         public AutoMapperProfiles() {
 
-            CreateMap<AssetEntity, AssetVM>().ReverseMap();
+            CreateMap<AssetEntity, GetAssetVM>().ReverseMap();
+            CreateMap<AssetEntity, PostAssetVM>().ReverseMap();
             CreateMap<CommandEntity, CommandVM>().ReverseMap();
+            CreateMap<UserEntity, UserVM>().ReverseMap();
+
         }
     }
 }

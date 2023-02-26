@@ -46,7 +46,7 @@ namespace Backend.Data.Repositories
         #region Asset
         public async Task<IEnumerable<AssetEntity>> GetAssetsList()
         {
-            var model = await _model.Assets.ToListAsync();
+            var model = await _model.Assets.Include( x => x.Owner).ToListAsync();
             return model;
         }
 
@@ -84,7 +84,7 @@ namespace Backend.Data.Repositories
         #region Command
         public async Task<IEnumerable<CommandEntity>> GetCommandsList()
         {
-            var model = await _model.Commands.ToListAsync();
+            var model = await _model.Commands.Include(  x => x.Owner).ToListAsync();
             return model;
         }
 
@@ -121,7 +121,7 @@ namespace Backend.Data.Repositories
         #region User
         public async Task<IEnumerable<UserEntity>> GetUsersList()
         {
-            var model = await _model.Users.ToListAsync();
+            var model = await _model.Users.Include(x => x.Assets).ToListAsync();
             return model;
         }
 

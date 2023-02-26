@@ -27,5 +27,7 @@ namespace Backend.Data.Entities
         public string? UserEmail { get; set; }
         public int OwnerId { get; set; }
 
+        public virtual UserEntity Owner { get; set; }
+
     }
 }

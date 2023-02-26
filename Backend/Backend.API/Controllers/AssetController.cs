@@ -33,11 +33,13 @@ namespace Backend.Controllers
         public async Task<IResult> GetAssetsList()
         {
             var result = await _genericService.GetAssetsList();
+            IEnumerable<GetAssetVM> models = _mapper.Map<IEnumerable<GetAssetVM>>(result);
+
             if (result == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(result);
+            return Results.Ok(models);
         }
 
         // Method to Save the Asset detail
@@ -46,20 +48,21 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 
-        public async Task<IResult> SaveAssetDetail(AssetVM model)
+        public async Task<IResult> SaveAssetDetail(PostAssetVM model)
         {
             UserEntity currentUser = GetCurrentUser();
             AssetEntity asset = _mapper.Map<AssetEntity>(model);
 
             var users = await _genericService.GetUsersList();
             asset.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+            asset.Owner = await _genericService.GetUserDetailById(asset.OwnerId);
 
             var save = await _genericService.SaveAssetDetail(asset);
             if (save == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(save);
+            return Results.Ok();
         }
 
         [HttpPut]
@@ -68,20 +71,21 @@ namespace Backend.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 
-        public async Task<IResult> UpdateAsset([FromRoute] string id, [FromBody] AssetVM model)
+        public async Task<IResult> UpdateAsset([FromRoute] string id, [FromBody] PostAssetVM model)
         {
             UserEntity currentUser = GetCurrentUser();
             AssetEntity asset = _mapper.Map<AssetEntity>(model);
 
             var users = await _genericService.GetUsersList();
             asset.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+            asset.Owner = currentUser;
 
             var save = await _genericService.UpdateAssetDetail(asset);
             if (save == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(save);
+            return Results.Ok();
         }
 
         // Method to delete the Asset detail

@@ -12,6 +12,11 @@ namespace Backend.Data.Entities
     [Table("Users")]
     public class UserEntity
     {
+        public UserEntity()
+        {
+            this.Assets = new HashSet<AssetEntity>();
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -21,12 +26,14 @@ namespace Backend.Data.Entities
         public string? Password { get; set; }
 
         public Role Role { get; set; }
+        
+        public virtual ICollection<AssetEntity> Assets { get; set; }
 
     }
 
     public enum Role
     {
         Manager,
-        Owner
+        Admin
     }
 }

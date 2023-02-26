@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Backend.API.ViewModel;
 using Backend.Business.Services;
 using Backend.Controllers;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend.API.Controllers
 {
@@ -34,11 +36,13 @@ namespace Backend.API.Controllers
         public async Task<IResult> GetCommandsList()
         {
             var result = await _genericService.GetCommandsList();
+            IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
+
             if (result == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(result);
+            return Results.Ok(models);
         }
 
         // Method to Save the Command detail
@@ -46,15 +50,21 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> SaveCommandDetail(CommandEntity model)
+        public async Task<IResult> SaveCommandDetail(CommandVM model)
         {
+            UserEntity currentUser = GetCurrentUser();
             CommandEntity command = _mapper.Map<CommandEntity>(model);
+
+            var users = await _genericService.GetUsersList();
+            command.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+            command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
+
             var save = await _genericService.SaveCommandDetail(command);
             if (save == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(save);
+            return Results.Ok();
         }
 
         [HttpPut]
@@ -62,15 +72,22 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> UpdateCommand([FromRoute] string id, [FromBody] CommandEntity model)
+        public async Task<IResult> UpdateCommand([FromRoute] string id, [FromBody] CommandVM model)
         {
-            model.Id = Convert.ToInt32(id);
-            var save = await _genericService.UpdateCommandDetail(model);
-            if (save == null)
+            UserEntity currentUser = GetCurrentUser();
+            CommandEntity command = _mapper.Map<CommandEntity>(model);
+
+            var users = await _genericService.GetUsersList();
+            command.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+            command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
+
+            var update = await _genericService.UpdateCommandDetail(command);
+            if (update == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok(save);
+
+            return Results.Ok();
         }
 
         // Method to delete the Asset detail
@@ -84,5 +101,23 @@ namespace Backend.API.Controllers
             return Results.Ok();
         }
 
+        private UserEntity GetCurrentUser()
+        {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                var userClaims = identity.Claims;
+                Role role;
+                Enum.TryParse<Role>(userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out role);
+
+                return new UserEntity
+                {
+                    UserEmail = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
+                    Role = role
+                };
+            }
+
+            return null;
+        }
     }
 }

@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Reflection;
+using System.Net.WebSockets;
+using System.Net;
 
 namespace Backend.API
 {
@@ -80,6 +82,7 @@ namespace Backend.API
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+         
         }
     }
 }

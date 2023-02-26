@@ -30,7 +30,7 @@ namespace Backend.Data
                 v => (CommandTypes)Enum.Parse(typeof(CommandTypes), v));
         }
 
-        public DbSet<AssetEntity> Assets { get; set; }
+        public DbSet<AssetEntity>? Assets { get; set; }
         public DbSet<UserEntity>? Users { get; set; }
         public DbSet<CommandEntity>? Commands { get; set; }
     }

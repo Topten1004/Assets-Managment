@@ -4,8 +4,7 @@ namespace Backend.API.ViewModel
 {
     public class CommandVM
     {
-        public CommandType command { get; set; }
-
-        public int ownerId { get; set; }
+        public CommandType Command { get; set; }
+        public UserVM? Owner { get; set; }
     }
 }
