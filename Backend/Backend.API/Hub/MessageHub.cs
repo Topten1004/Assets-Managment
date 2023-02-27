@@ -19,26 +19,25 @@ namespace Backend.Controllers
             _mapper = mapper;
         }
 
-        public async Task SendCommands(List<string> message)
+        public async Task SendCommands(List<SocketCommandVM> commands)
         {
-
-            await Clients.All.SendCommands(message);
+            await Clients.All.SendCommands(commands);
         }
 
         // Client SignalR is connect
         public override async Task<Task> OnConnectedAsync()
         {
             var result = await _genericService.GetCommandsList();
-            IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
-            List<string> commands = new List<string>();
+            var assets = await _genericService.GetAssetsList();
 
-            foreach (var tempModel in models)
+            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+
+            foreach(var item in models)
             {
-                string temp = JsonSerializer.Serialize(tempModel);
-                commands.Add(temp);
+                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
             }
 
-            await Clients.All.SendCommands(commands);
+            await Clients.All.SendCommands(models.ToList());
 
             return base.OnConnectedAsync(); 
         }

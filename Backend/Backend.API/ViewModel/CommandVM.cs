@@ -13,6 +13,9 @@ namespace Backend.API.ViewModel
     public class SocketCommandVM
     {
         public string? TankName { get; set; }
-        public CommandType Command { get; set; }
+        public string? Command { get; set; }
+
+        [NotMapped]
+        public string? UserEmail { get; set; }
     }
 }

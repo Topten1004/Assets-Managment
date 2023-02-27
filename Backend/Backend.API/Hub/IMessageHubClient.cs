@@ -1,7 +1,9 @@
-﻿namespace Backend.Controllers
+﻿using Backend.API.ViewModel;
+
+namespace Backend.Controllers
 {
     public interface IMessageHubClient
     {
-        Task SendCommands(List<string> message);
+        Task SendCommands(List<SocketCommandVM> commands);
     }
 }

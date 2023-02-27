@@ -43,15 +43,7 @@ namespace Backend.API.Controllers
         {
             var result = await _genericService.GetCommandsList();
             IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
-            List<string> commands = new List<string>();
 
-            foreach (var model in models)
-            {
-                string temp = JsonSerializer.Serialize(model);
-                commands.Add(temp);
-            }
-
-            _messageHub.Clients.All.SendCommands(commands);
             return Results.Ok(models);
         }
 
@@ -62,8 +54,6 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IResult> SaveCommandDetail(CommandVM model)
         {
-
-            UserEntity currentUser = GetCurrentUser();
             CommandEntity command = _mapper.Map<CommandEntity>(model);
             command.Command = (CommandTypes)Enum.Parse(typeof(CommandTypes), model.Command);
 
@@ -73,18 +63,17 @@ namespace Backend.API.Controllers
 
             var save = await _genericService.SaveCommandDetail(command);
 
+            #region Socket
             var result = await _genericService.GetCommandsList();
-            IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
-            List<string> commands = new List<string>();
-
-            foreach (var tempModel in models)
+            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+  
+            foreach(var item in models)
             {
-                string temp = JsonSerializer.Serialize(tempModel);
-                commands.Add(temp);
+                item.UserEmail = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().UserEmail;
             }
 
-            _messageHub.Clients.All.SendCommands(commands);
-
+            _messageHub.Clients.All.SendCommands(models.ToList());
+            #endregion
             if (save == null)
             {
                 return Results.NotFound();
