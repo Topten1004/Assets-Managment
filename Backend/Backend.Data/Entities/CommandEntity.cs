@@ -20,6 +20,8 @@ namespace Backend.Data.Entities
         public int  OwnerId { get; set; }
 
         public string TankName { get; set; }
+
+        public bool? Flag { get; set; }
         public virtual UserEntity? Owner { get; set; }
     }
 

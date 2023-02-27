@@ -60,6 +60,7 @@ namespace Backend.API.Controllers
             var assets = await _genericService.GetAssetsList();
             command.OwnerId = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().OwnerId;
             command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
+            command.Flag = false;
 
             var save = await _genericService.SaveCommandDetail(command);
 
@@ -69,11 +70,12 @@ namespace Backend.API.Controllers
   
             foreach(var item in models)
             {
-                item.UserEmail = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().UserEmail;
+                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
             }
 
             _messageHub.Clients.All.SendCommands(models.ToList());
             #endregion
+
             if (save == null)
             {
                 return Results.NotFound();
@@ -89,14 +91,24 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
-        public async Task<IResult> UpdateCommand([FromRoute] string id, [FromBody] CommandVM model)
+        public async Task<IResult> UpdateCommand([FromRoute] string id)
         {
-            UserEntity currentUser = GetCurrentUser();
-            CommandEntity command = _mapper.Map<CommandEntity>(model);
+            var assets = await _genericService.GetAssetsList();
 
-            var users = await _genericService.GetUsersList();
-            command.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
-            command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
+            CommandEntity command = await _genericService.GetCommandDetailById(Convert.ToInt32(id));
+            command.Flag = true;
+
+            #region Socket
+            var result = await _genericService.GetCommandsList();
+            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+
+            foreach (var item in models)
+            {
+                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+            }
+
+            _messageHub.Clients.All.SendCommands(models.ToList());
+            #endregion
 
             var update = await _genericService.UpdateCommandDetail(command);
             if (update == null)
