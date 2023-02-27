@@ -22,7 +22,7 @@ namespace Backend.Data.Entities
 
         public float Longitude { get; set; }
 
-        public float Capacity { get; set; }
+        public float Limit { get; set; }
 
         public string? UserEmail { get; set; }
         public int OwnerId { get; set; }

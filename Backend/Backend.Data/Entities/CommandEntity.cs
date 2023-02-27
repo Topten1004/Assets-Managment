@@ -17,15 +17,16 @@ namespace Backend.Data.Entities
         public int Id { get; set; }
         public CommandTypes Command { get; set; }
 
-        public int OwnerId { get; set; }
+        public int  OwnerId { get; set; }
 
+        public string TankName { get; set; }
         public virtual UserEntity? Owner { get; set; }
     }
 
     public enum CommandTypes
     {
-        None,
         Fill,
         Repair,
+        Both
     }
 }

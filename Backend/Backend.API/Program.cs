@@ -12,27 +12,11 @@ var app = builder.Build();
 
 startup.Configure(app, builder.Environment);
 
-app.UseCors(builder =>
-{
-    builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader();
-});
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-var webSocketOptions = new WebSocketOptions
-{
-    KeepAliveInterval = TimeSpan.FromMinutes(2)
-};
-
-app.UseWebSockets(webSocketOptions);
-
 app.UseRouting();
 
 app.UseAuthentication();
@@ -43,6 +27,7 @@ app.MapControllers();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapHub<MessageHub>("/commands");
 });
 
 app.UseDefaultFiles();

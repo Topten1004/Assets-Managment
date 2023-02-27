@@ -4,12 +4,16 @@ using Backend.Business.Services;
 using Backend.Controllers;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
+using System.Text.Json;
+using Websocket.Client;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Backend.API.Controllers
 {
-
     [Authorize]
     [ApiController]
     [Route("[controller]")]
@@ -18,12 +22,14 @@ namespace Backend.API.Controllers
         private readonly ILogger<CommandController> _logger;
         private readonly IGenericService _genericService;
         private readonly IMapper _mapper;
+        private IHubContext<MessageHub, IMessageHubClient> _messageHub;
 
-        public CommandController(ILogger<CommandController> logger, IGenericService genericService, IMapper mapper)
+        public CommandController(ILogger<CommandController> logger, IGenericService genericService, IMapper mapper, IHubContext<MessageHub, IMessageHubClient> messageHub)
         {
             _genericService = genericService;
             _logger = logger;
             _mapper = mapper;
+            _messageHub = messageHub;
         }
 
         // Method to get the list of the Commands
@@ -33,15 +39,19 @@ namespace Backend.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
 
-        public async Task<IResult> GetCommandsList()
+        public async Task<IResult> GetCommandsList(CommandTypes commandTypes)
         {
             var result = await _genericService.GetCommandsList();
             IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
+            List<string> commands = new List<string>();
 
-            if (result == null)
+            foreach (var model in models)
             {
-                return Results.NotFound();
+                string temp = JsonSerializer.Serialize(model);
+                commands.Add(temp);
             }
+
+            _messageHub.Clients.All.SendCommands(commands);
             return Results.Ok(models);
         }
 
@@ -52,20 +62,38 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IResult> SaveCommandDetail(CommandVM model)
         {
+
             UserEntity currentUser = GetCurrentUser();
             CommandEntity command = _mapper.Map<CommandEntity>(model);
+            command.Command = (CommandTypes)Enum.Parse(typeof(CommandTypes), model.Command);
 
-            var users = await _genericService.GetUsersList();
-            command.OwnerId = users.Where(x => x.UserEmail == currentUser.UserEmail).FirstOrDefault().Id;
+            var assets = await _genericService.GetAssetsList();
+            command.OwnerId = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().OwnerId;
             command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
 
             var save = await _genericService.SaveCommandDetail(command);
+
+            var result = await _genericService.GetCommandsList();
+            IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
+            List<string> commands = new List<string>();
+
+            foreach (var tempModel in models)
+            {
+                string temp = JsonSerializer.Serialize(tempModel);
+                commands.Add(temp);
+            }
+
+            _messageHub.Clients.All.SendCommands(commands);
+
             if (save == null)
             {
                 return Results.NotFound();
             }
-            return Results.Ok();
+                
+            return Results.Ok(models);
         }
+
+
 
         [HttpPut]
         [Route("{id}")]

@@ -7,12 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Controllers\WebSocketApiController.cs~RF1c876cc.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.20" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="7.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.3">
       <PrivateAssets>all</PrivateAssets>
@@ -22,11 +27,17 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.27.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.Net.WebSockets.WebSocketProtocol" Version="5.0.0" />
+    <PackageReference Include="Websocket.Client" Version="4.6.1" />
+    <PackageReference Include="websocketsharp.core" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Backend.Business\Backend.Business.csproj" />
     <ProjectReference Include="..\Backend.Data\Backend.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hub\" />
   </ItemGroup>
 
 </Project>

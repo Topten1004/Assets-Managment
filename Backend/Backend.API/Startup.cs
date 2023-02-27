@@ -10,6 +10,8 @@ using System.Text;
 using System.Reflection;
 using System.Net.WebSockets;
 using System.Net;
+using Backend.API.Controllers;
+using Backend.Controllers;
 
 namespace Backend.API
 {
@@ -24,6 +26,20 @@ namespace Backend.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CORSPolicy",
+                    builder => builder
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .SetIsOriginAllowed((hosts) => true));
+            });
+
+            services.AddControllers().AddControllersAsServices();
+
             services.AddDbContext<ApplicationDbContext>(
                 option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Backend.API")
             ));
@@ -82,7 +98,7 @@ namespace Backend.API
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-         
+            app.UseCors("CORSPolicy");
         }
     }
 }

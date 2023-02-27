@@ -12,7 +12,7 @@ namespace Backend.API
             CreateMap<AssetEntity, PostAssetVM>().ReverseMap();
             CreateMap<CommandEntity, CommandVM>().ReverseMap();
             CreateMap<UserEntity, UserVM>().ReverseMap();
-
+            CreateMap<CommandEntity, SocketCommandVM>().ReverseMap();
         }
     }
 }

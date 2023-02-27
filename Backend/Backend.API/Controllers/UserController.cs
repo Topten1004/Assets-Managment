@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using System.Runtime.InteropServices;
 
 namespace Backend.API.Controllers
 {
@@ -87,6 +88,7 @@ namespace Backend.API.Controllers
 
             return Results.Ok(token);
         }
+
         // To generate token
         private string GenerateToken(UserEntity user)
         {
@@ -101,29 +103,10 @@ namespace Backend.API.Controllers
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(15),
+                expires: DateTime.Now.AddMinutes(10005),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private UserEntity GetCurrentUser()
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
-            {
-                var userClaims = identity.Claims;
-                Role role;
-                Enum.TryParse<Role>(userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out role);
-
-                return new UserEntity
-                {
-                    UserEmail = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-                    Role = role
-                };
-            }
-
-            return null;
         }
     }
 }
