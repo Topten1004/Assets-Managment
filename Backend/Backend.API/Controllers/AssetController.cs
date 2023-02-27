@@ -6,6 +6,7 @@ using Backend.Business.Services;
 using Backend.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -21,13 +22,15 @@ namespace Backend.Controllers
         private readonly IGenericService _genericService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _config;
+        private IHubContext<MessageHub, IMessageHubClient> _messageHub;
 
-        public AssetController(ILogger<AssetController> logger, IGenericService genericService, IMapper mapper, IConfiguration config)
+        public AssetController(ILogger<AssetController> logger, IGenericService genericService, IMapper mapper, IConfiguration config, IHubContext<MessageHub, IMessageHubClient> messageHub)
         {
             _genericService= genericService;
             _logger = logger;
             _mapper = mapper;
             _config= config;
+            _messageHub = messageHub;
         }
 
         // Method to get the list of the Assets
@@ -90,6 +93,7 @@ namespace Backend.Controllers
         public async Task<IResult> SaveAssetDetail(PostAssetVM model)
         {
             AssetEntity asset = _mapper.Map<AssetEntity>(model);
+            var assets = await _genericService.GetAssetsList();
 
             var users = await _genericService.GetUsersList();
             var checkUser = users.Where( x =>  x.UserEmail == model.UserEmail );
@@ -120,12 +124,25 @@ namespace Backend.Controllers
             // Save command to the database
             if (asset.Amount == 0)
             {
+
                 CommandEntity command = new CommandEntity();
                 command.Command = CommandTypes.Fill;
                 command.OwnerId = asset.Owner.Id;
                 command.TankName = model.TankName;
 
                 await _genericService.SaveCommandDetail(command);
+
+                #region Socket
+                var result = await _genericService.GetCommandsList();
+                IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+
+                foreach (var item in models)
+                {
+                    item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+                }
+
+                _messageHub.Clients.All.SendCommands(models.ToList());
+                #endregion
             }
 
             var save = await _genericService.SaveAssetDetail(asset);

@@ -13,6 +13,7 @@ namespace Backend.API.ViewModel
 
     public class SocketCommandVM
     {
+        public int Id { get; set; }
         public string? TankName { get; set; }
         public string? Command { get; set; }
 

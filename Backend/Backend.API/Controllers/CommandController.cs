@@ -86,7 +86,7 @@ namespace Backend.API.Controllers
 
 
 
-        [HttpPut]
+        [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -128,25 +128,6 @@ namespace Backend.API.Controllers
         {
             await _genericService.DeleteCommand(Convert.ToInt32(Id));
             return Results.Ok();
-        }
-
-        private UserEntity GetCurrentUser()
-        {
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
-            if (identity != null)
-            {
-                var userClaims = identity.Claims;
-                Role role;
-                Enum.TryParse<Role>(userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value, out role);
-
-                return new UserEntity
-                {
-                    UserEmail = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value,
-                    Role = role
-                };
-            }
-
-            return null;
         }
     }
 }
