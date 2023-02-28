@@ -33,6 +33,14 @@ namespace Backend.Data.Repositories
         Task<UserEntity> UpdateUserDetail(UserEntity model);
         Task DeleteUser(int Id);
         #endregion
+
+        #region Log
+        Task<IEnumerable<LogEntity>> GetLogsList();
+        Task<LogEntity> GetLogDetailById(int Id);
+        Task<LogEntity> SaveLogDetail(LogEntity model);
+        Task<LogEntity> UpdateLogDetail(LogEntity model);
+        Task DeleteLog(int Id);
+        #endregion
     }
 
     public class GenericRepository : IGenericRepository
@@ -84,7 +92,7 @@ namespace Backend.Data.Repositories
         #region Command
         public async Task<IEnumerable<CommandEntity>> GetCommandsList()
         {
-            var model = await _model.Commands.Include(  x => x.Owner).ToListAsync();
+            var model = await _model.Commands.Include( x => x.Owner).ToListAsync();
             return model;
         }
 
@@ -147,6 +155,43 @@ namespace Backend.Data.Repositories
         public async Task DeleteUser(int Id)
         {
             UserEntity asset = await _model.Users.FindAsync(Id);
+            if (asset != null)
+            {
+                _model.Remove(asset);
+                await _model.SaveChangesAsync();
+            }
+        }
+        #endregion
+
+        #region Log
+        public async Task<IEnumerable<LogEntity>> GetLogsList()
+        {
+            var model = await _model.Logs.ToListAsync();
+            return model;
+        }
+
+        public async Task<LogEntity> GetLogDetailById(int Id)
+        {
+            return await _model.Logs.FindAsync(Id);
+        }
+
+        public async Task<LogEntity> SaveLogDetail(LogEntity model)
+        {
+            await _model.Logs.AddAsync(model);
+            await _model.SaveChangesAsync();
+            return model;
+        }
+
+        public async Task<LogEntity> UpdateLogDetail(LogEntity model)
+        {
+            _model.Logs.Update(model);
+            await _model.SaveChangesAsync();
+            return model;
+        }
+
+        public async Task DeleteLog(int Id)
+        {
+            LogEntity asset = await _model.Logs.FindAsync(Id);
             if (asset != null)
             {
                 _model.Remove(asset);

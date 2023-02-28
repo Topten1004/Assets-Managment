@@ -14,6 +14,7 @@ namespace Backend.API
             CreateMap<UserEntity, UserVM>().ReverseMap();
             CreateMap<SocketCommandVM, CommandVM>().ReverseMap();
             CreateMap<CommandEntity, SocketCommandVM>().ReverseMap(); 
+            CreateMap<LogEntity, LogVM>().ReverseMap();
         }
     }
 }

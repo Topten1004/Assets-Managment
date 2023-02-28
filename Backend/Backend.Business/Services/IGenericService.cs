@@ -44,7 +44,17 @@ namespace Backend.Business.Services
 
         Task DeleteUser(int Id);
         #endregion
+        #region Log
+        Task<IEnumerable<LogEntity>> GetLogsList();
 
+        Task<LogEntity> GetLogDetailById(int Id);
+
+        Task<LogEntity> SaveLogDetail(LogEntity model);
+
+        Task<LogEntity> UpdateLogDetail(LogEntity model);
+
+        Task DeleteLog(int Id);
+        #endregion
     }
 
     public class GenericService : IGenericService
@@ -137,5 +147,31 @@ namespace Backend.Business.Services
         }
         #endregion
 
+        #region Logs
+        public async Task<IEnumerable<LogEntity>> GetLogsList()
+        {
+            return await _assetRepository.GetLogsList();
+        }
+
+        public async Task<LogEntity> GetLogDetailById(int Id)
+        {
+            return await _assetRepository.GetLogDetailById(Id);
+        }
+
+        public async Task<LogEntity> SaveLogDetail(LogEntity model)
+        {
+            return await _assetRepository.SaveLogDetail(model);
+        }
+
+        public async Task<LogEntity> UpdateLogDetail(LogEntity model)
+        {
+            return await _assetRepository.UpdateLogDetail(model);
+        }
+
+        public async Task DeleteLog(int Id)
+        {
+            await _assetRepository.DeleteLog(Id);
+        }
+        #endregion
     }
 }

@@ -24,6 +24,11 @@ namespace Backend.Controllers
             await Clients.All.SendCommands(commands);
         }
 
+        public async Task SendTotalAsset(PostTotalAsset model)
+        {
+            await Clients.All.SendTotalAsset(model);
+        }
+
         // Client SignalR is connect
         public override async Task<Task> OnConnectedAsync()
         {
@@ -35,6 +40,9 @@ namespace Backend.Controllers
             foreach(var item in models)
             {
                 item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+                item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
+                item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+
             }
 
             await Clients.All.SendCommands(models.ToList());

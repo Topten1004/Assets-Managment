@@ -33,5 +33,6 @@ namespace Backend.Data
         public DbSet<AssetEntity>? Assets { get; set; }
         public DbSet<UserEntity>? Users { get; set; }
         public DbSet<CommandEntity>? Commands { get; set; }
+        public DbSet<LogEntity>? Logs { get; set; }
     }
 }

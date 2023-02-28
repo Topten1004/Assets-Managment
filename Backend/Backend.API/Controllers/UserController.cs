@@ -36,7 +36,7 @@ namespace Backend.API.Controllers
         // Method to Login
         [HttpPost]
         [Route("/Login")]
-        public async Task<IResult> LoginIn(LoginVM model)
+        public async Task<IActionResult> LoginIn(LoginVM model)
         {
             var results = await _genericService.GetUsersList();
             
@@ -52,19 +52,27 @@ namespace Backend.API.Controllers
 
             if (result.Count() == 0)
             {
-                return Results.NotFound();
+                return NotFound();
             }
 
             string token = GenerateToken(result.First());
 
-            return Results.Ok(token);
+            return Ok(token);
         }
 
         // Method to Register Manager
         [HttpPost]
         [Route("/Register")]
-        public async Task<IResult> RegisterManager(SignUpVM model)
+        public async Task<IActionResult> RegisterManager(SignUpVM model)
         {
+            var users = await _genericService.GetUsersList();
+            users = users.Where(x => x.UserEmail == model.UserEmail);
+
+            if(users.Count() > 0)
+            {
+                return BadRequest("UserEmail exists!");
+            }
+
             UserEntity newUser = new UserEntity();
             newUser.UserEmail = model.UserEmail;
 
@@ -81,12 +89,12 @@ namespace Backend.API.Controllers
             var save = await _genericService.SaveUserDetail(newUser);
             if (save == null)
             {
-                return Results.NotFound();
+                return NotFound();
             }
 
             string token = GenerateToken(save);
 
-            return Results.Ok(token);
+            return Ok(token);
         }
 
         // To generate token
