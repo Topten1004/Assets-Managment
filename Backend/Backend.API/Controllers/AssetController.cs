@@ -141,7 +141,6 @@ namespace Backend.Controllers
                     await _genericService.UpdateAssetDetail(item);
                 }
 
-                await CheckAlert();
                 return Ok();
             }
             catch(Exception ex)
@@ -181,6 +180,7 @@ namespace Backend.Controllers
                     asset.Amount += model.Amount;
                     LogEntity log = new LogEntity
                     {
+                        From = model.From,
                         Amount = model.Amount,
                         TankName = asset.TankName,
                         Type = "Buy",
@@ -190,8 +190,6 @@ namespace Backend.Controllers
 
                     await _genericService.SaveLogDetail(log);
                 }
-
-                await CheckAlert();
 
                 var save = _genericService.UpdateAssetDetail(asset);
                 return Ok(save);
@@ -237,6 +235,7 @@ namespace Backend.Controllers
 
                     LogEntity log = new LogEntity
                     {
+                        From = model.From,
                         Amount = model.Amount,
                         TankName = asset.TankName,
                         Type = "Sell",
@@ -246,8 +245,6 @@ namespace Backend.Controllers
 
                     await _genericService.SaveLogDetail(log);
                 }
-                await CheckAlert();
-
                 var save = await _genericService.UpdateAssetDetail(asset);
                 return Ok(save);
             } catch(Exception ex)
@@ -274,9 +271,6 @@ namespace Backend.Controllers
             {
                 var assets = await _genericService.GetAssetsList();
                 var users = await _genericService.GetUsersList();
-
-                if (assets.Where(x => x.TankName == model.TankName).Count() > 0)
-                    return BadRequest("TankName exists!");
 
                 if (assets.Where(x => x.UserEmail == model.UserEmail).Count() > 0)
                     return BadRequest("Manager already have a tank!");
@@ -309,6 +303,8 @@ namespace Backend.Controllers
                     asset.Owner = checkUser.First();
                 }
 
+                asset.UpdatedDate = DateTime.UtcNow;
+
                 var save = await _genericService.SaveAssetDetail(asset);
 
                 // Save command to the database
@@ -320,13 +316,6 @@ namespace Backend.Controllers
                     command.OwnerId = asset.Owner.Id;
                     command.TankName = model.TankName;
                     command.Flag = false;
-
-                    //var commands = await _genericService.GetCommandsList();
-                    //int count = commands.Where(x => ((x.Command == command.Command) && (x.OwnerId == command.OwnerId) && (x.TankName == command.TankName) && (x.Flag == false))).Count();
-                    //if (count == 0)
-                    //{
-                    //    await _genericService.SaveCommandDetail(command);
-                    //}
 
                     await _genericService.SaveCommandDetail(command);
 
@@ -391,7 +380,6 @@ namespace Backend.Controllers
                 {
                     return NotFound();
                 }
-                await CheckAlert();
 
                 return Ok(save);
             }
@@ -462,12 +450,6 @@ namespace Backend.Controllers
                     command.OwnerId = item.Owner.Id;
                     command.TankName = item.TankName;
                     command.Flag = false;
-
-                    //int count = commands.Where(x => ((x.Command == command.Command) && (x.OwnerId == command.OwnerId) && (x.TankName == command.TankName) && (x.Flag == false))).Count();
-                    //if (count == 0)
-                    //{
-                    //    await _genericService.SaveCommandDetail(command);
-                    //}
 
                     await _genericService.SaveCommandDetail(command);
 

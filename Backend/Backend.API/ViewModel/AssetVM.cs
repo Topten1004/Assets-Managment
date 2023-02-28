@@ -67,6 +67,10 @@ namespace Backend.API.ViewModel
         [JsonPropertyName("amount")]
 
         public float Amount { get; set; }
+
+        [Required]
+        [JsonPropertyName("from")]
+        public string From { get; set; }
     }
 
     public class SellAsset
@@ -80,6 +84,11 @@ namespace Backend.API.ViewModel
         [JsonPropertyName("amount")]
 
         public float Amount { get; set; }
+
+        [Required]
+        [JsonPropertyName("from")]
+
+        public string From { get; set; }
     }
     public class PostAssetVM
     {

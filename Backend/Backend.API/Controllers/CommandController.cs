@@ -178,7 +178,7 @@ namespace Backend.API.Controllers
 
                 _logger.LogError(msg);
 
-                return Problem(title: "/CommandController/DeleteCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(title: "/CommandController/UpdateCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
     }
