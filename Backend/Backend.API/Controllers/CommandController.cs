@@ -41,10 +41,22 @@ namespace Backend.API.Controllers
 
         public async Task<IActionResult> GetCommandsList()
         {
-            var result = await _genericService.GetCommandsList();
-            IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
+            try
+            {
+                var result = await _genericService.GetCommandsList();
+                IEnumerable<CommandVM> models = _mapper.Map<IEnumerable<CommandVM>>(result);
 
-            return Ok(models);
+                return Ok(models);
+
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Method: GetCommandsList, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/CommandController/GetCommandsList", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         // Method to Save the Command detail
@@ -54,48 +66,49 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SaveCommandDetail(CommandVM model)
         {
-
-            var assets = await _genericService.GetAssetsList();
-            var commands = await _genericService.GetCommandsList();
-
-            if (assets.Where(x => x.TankName == model.TankName).Count() == 0) {
-                return BadRequest("Can't find tank.");
-            }
-            //if (commands.Where(x => (x.Flag == false && x.TankName == model.TankName && x.Command == (CommandTypes)Enum.Parse(typeof(CommandTypes), model.Command))).ToList().Count() > 0){
-            //    return BadRequest("Command is already exists!");                    
-            //}
-
-            CommandEntity command = _mapper.Map<CommandEntity>(model);
-            command.Command = (CommandTypes)Enum.Parse(typeof(CommandTypes), model.Command);
-
-            command.OwnerId = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().OwnerId;
-            command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
-            command.Flag = false;
-
-
-            //int count = commands.Where(x => ((x.Command == command.Command) && (x.OwnerId == command.OwnerId) && (x.TankName == command.TankName) && (x.Flag == false))).Count();
-            //if (count == 0)
-            //{
-            //    await _genericService.SaveCommandDetail(command);
-            //}
-
-            await _genericService.SaveCommandDetail(command);
-
-            #region Socket
-            var result = await _genericService.GetCommandsList();
-            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
-  
-            foreach(var item in models)
+            try
             {
-                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
-                item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
-                item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
-            }
+                var assets = await _genericService.GetAssetsList();
+                var commands = await _genericService.GetCommandsList();
 
-            await _messageHub.Clients.All.SendCommands(models.ToList());
-            #endregion
-               
-            return Ok(models);
+                if (assets.Where(x => x.TankName == model.TankName).Count() == 0)
+                {
+                    return BadRequest("Can't find tank.");
+                }
+
+                CommandEntity command = _mapper.Map<CommandEntity>(model);
+                command.Command = (CommandTypes)Enum.Parse(typeof(CommandTypes), model.Command);
+
+                command.OwnerId = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().OwnerId;
+                command.Owner = await _genericService.GetUserDetailById(command.OwnerId);
+                command.Flag = false;
+
+                await _genericService.SaveCommandDetail(command);
+
+                #region Socket
+                var result = await _genericService.GetCommandsList();
+                IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+
+                foreach (var item in models)
+                {
+                    item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+                    item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
+                    item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+                }
+
+                await _messageHub.Clients.All.SendCommands(models.ToList());
+                #endregion
+
+                return Ok(models);
+
+            } catch(Exception ex)
+            {
+                var msg = $"Method: SaveCommandDetail, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/CommandController/SaveCommandDetail", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }            
         }
 
 
@@ -106,33 +119,45 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateCommand([FromRoute] string id)
         {
-            var assets = await _genericService.GetAssetsList();
-
-            CommandEntity command = await _genericService.GetCommandDetailById(Convert.ToInt32(id));
-            command.Flag = true;
-
-            #region Socket
-            var result = await _genericService.GetCommandsList();
-            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
-
-            foreach (var item in models)
+            try
             {
-                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
-                item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
-                item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+                var assets = await _genericService.GetAssetsList();
+
+                CommandEntity command = await _genericService.GetCommandDetailById(Convert.ToInt32(id));
+                command.Flag = true;
+
+                #region Socket
+                var result = await _genericService.GetCommandsList();
+                IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
+
+                foreach (var item in models)
+                {
+                    item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+                    item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
+                    item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+
+                }
+
+                await _messageHub.Clients.All.SendCommands(models.ToList());
+                #endregion
+
+                var update = await _genericService.UpdateCommandDetail(command);
+                if (update == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(update);
 
             }
-
-            await _messageHub.Clients.All.SendCommands(models.ToList());
-            #endregion
-
-            var update = await _genericService.UpdateCommandDetail(command);
-            if (update == null)
+            catch (Exception ex)
             {
-                return NotFound();
-            }
+                var msg = $"Method: UpdateCommand, Exception: {ex.Message}";
 
-            return Ok();
+                _logger.LogError(msg);
+
+                return Problem(title: "/CommandController/UpdateCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         // Method to delete the Asset detail
@@ -142,8 +167,19 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteCommand(string Id)
         {
-            await _genericService.DeleteCommand(Convert.ToInt32(Id));
-            return Ok();
+            try
+            {
+                await _genericService.DeleteCommand(Convert.ToInt32(Id));
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Method: DeleteCommand, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/CommandController/DeleteCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }

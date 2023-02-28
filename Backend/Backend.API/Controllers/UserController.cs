@@ -36,65 +36,94 @@ namespace Backend.API.Controllers
         // Method to Login
         [HttpPost]
         [Route("/Login")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> LoginIn(LoginVM model)
         {
-            var results = await _genericService.GetUsersList();
-            
-            var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
-            var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
-
-            var hmacSHA1 = new HMACSHA1(salt);
-            var saltedHash = hmacSHA1.ComputeHash(password);
-
-            var comparePassword = Convert.ToBase64String(saltedHash);
-
-            var result = results.Where(x => (x.UserEmail == model.UserEmail && x.Password == comparePassword));
-
-            if (result.Count() == 0)
+            try
             {
-                return NotFound();
+                var results = await _genericService.GetUsersList();
+
+                var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
+
+                var hmacSHA1 = new HMACSHA1(salt);
+                var saltedHash = hmacSHA1.ComputeHash(password);
+
+                var comparePassword = Convert.ToBase64String(saltedHash);
+
+                var result = results.Where(x => (x.UserEmail == model.UserEmail && x.Password == comparePassword));
+
+                if (result.Count() == 0)
+                {
+                    return NotFound();
+                }
+
+                string token = GenerateToken(result.First());
+
+                return Ok(token);
             }
+            catch(Exception ex)
+            {
+                var msg = $"Method: LoginIn, Exception: {ex.Message}";
 
-            string token = GenerateToken(result.First());
+                _logger.LogError(msg);
 
-            return Ok(token);
+                return Problem(title: "/UserController/LoginIn", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         // Method to Register Manager
         [HttpPost]
         [Route("/Register")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<IActionResult> RegisterManager(SignUpVM model)
         {
-            var users = await _genericService.GetUsersList();
-            users = users.Where(x => x.UserEmail == model.UserEmail);
-
-            if(users.Count() > 0)
+            try
             {
-                return BadRequest("UserEmail exists!");
-            }
+                var users = await _genericService.GetUsersList();
+                users = users.Where(x => x.UserEmail == model.UserEmail);
 
-            UserEntity newUser = new UserEntity();
-            newUser.UserEmail = model.UserEmail;
+                if (users.Count() > 0)
+                {
+                    return BadRequest("UserEmail exists!");
+                }
 
-            var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
-            var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
+                UserEntity newUser = new UserEntity();
+                newUser.UserEmail = model.UserEmail;
 
-            var hmacSHA1 = new HMACSHA1(salt);
-            var saltedHash = hmacSHA1.ComputeHash(password);
+                var salt = System.Text.Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+                var password = System.Text.Encoding.UTF8.GetBytes(model.Password);
 
-            newUser.UserEmail = model.UserEmail;
-            newUser.Password = Convert.ToBase64String(saltedHash);
-            newUser.Role = 0;
+                var hmacSHA1 = new HMACSHA1(salt);
+                var saltedHash = hmacSHA1.ComputeHash(password);
 
-            var save = await _genericService.SaveUserDetail(newUser);
-            if (save == null)
+                newUser.UserEmail = model.UserEmail;
+                newUser.Password = Convert.ToBase64String(saltedHash);
+                newUser.Role = 0;
+
+                var save = await _genericService.SaveUserDetail(newUser);
+                if (save == null)
+                {
+                    return NotFound();
+                }
+
+                string token = GenerateToken(save);
+
+                return Ok(token);
+            } catch(Exception ex)
             {
-                return NotFound();
+                var msg = $"Method: RegisterManager, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/UserController/RegisterManager", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
-
-            string token = GenerateToken(save);
-
-            return Ok(token);
         }
 
         // To generate token

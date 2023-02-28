@@ -60,8 +60,8 @@ namespace Backend.API.ViewModel
     public class BuyAsset
     {
         [Required]
-        [JsonPropertyName("tank_name")]
-        public string TankName { get; set; }
+        [JsonPropertyName("user_email")]
+        public string UserEmail { get; set; }
 
         [Required]
         [JsonPropertyName("amount")]
@@ -72,9 +72,9 @@ namespace Backend.API.ViewModel
     public class SellAsset
     {
         [Required]
-        [JsonPropertyName("tank_name")]
+        [JsonPropertyName("user_email")]
 
-        public string? TankName { get; set; }
+        public string? UserEmail { get; set; }
 
         [Required]
         [JsonPropertyName("amount")]

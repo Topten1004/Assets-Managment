@@ -37,39 +37,59 @@ namespace Backend.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetLogsList()
         {
-            var result = await _genericService.GetLogsList();
-            IEnumerable<LogEntity> models = _mapper.Map<IEnumerable<LogEntity>>(result);
-
-            if (result == null)
+            try
             {
-                return NotFound();
+                var result = await _genericService.GetLogsList();
+                IEnumerable<LogEntity> models = _mapper.Map<IEnumerable<LogEntity>>(result);
+
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(models);
             }
-            return Ok(models);
+            catch(Exception ex) {
+                var msg = $"Method: GetLogsList, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/LogController/GetLogsList", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
 
         [HttpPost]
         [Route("")]
-        [ProducesResponseType(typeof(List<LogEntity>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(LogEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SaveLogDetail(LogVM model)
         {
-            var assets = await _genericService.GetAssetsList();
-            if (assets.Where(x => x.TankName == model.TankName).Count() == 0)
-                return BadRequest("Can't find Tank");
-
-            LogEntity log = _mapper.Map<LogEntity>(model);
-            log.CreatedDate = DateTime.UtcNow;
-            log.UserEmail = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().UserEmail;
-
-            var save = await _genericService.SaveLogDetail(log);
-
-            if (save == null)
+            try
             {
-                return NotFound();
-            }
+                var assets = await _genericService.GetAssetsList();
+                if (assets.Where(x => x.TankName == model.TankName).Count() == 0)
+                    return BadRequest("Can't find Tank");
 
-            return Ok(save);
+                LogEntity log = _mapper.Map<LogEntity>(model);
+                log.CreatedDate = DateTime.UtcNow;
+                log.UserEmail = assets.Where(x => x.TankName == model.TankName).FirstOrDefault().UserEmail;
+
+                var save = await _genericService.SaveLogDetail(log);
+
+                if (save == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(save);
+            } catch (Exception ex)
+            {
+                var msg = $"Method: SaveLogDetail, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/LogController/SaveLogDetail", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
