@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using System.Text.Json;
-using Websocket.Client;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Backend.API.Controllers
