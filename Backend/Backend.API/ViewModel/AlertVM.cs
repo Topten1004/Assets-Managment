@@ -6,7 +6,7 @@ namespace Backend.API.ViewModel
     public class AlertVM
     {
         [Required]
-        [JsonPropertyName("min_amount")]
+        [JsonPropertyName("minAmount")]
         public float MinAmount { get; set; }
 
         [Required]

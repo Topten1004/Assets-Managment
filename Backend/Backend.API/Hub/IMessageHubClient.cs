@@ -7,5 +7,7 @@ namespace Backend.Controllers
         Task SendCommands(List<SocketCommandVM> commands);
 
         Task SendTotalAsset(PostTotalAsset model);
+
+        Task SendLogs(List<LogVM> logs);
     }
 }

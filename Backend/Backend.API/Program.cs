@@ -27,8 +27,9 @@ app.MapControllers();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-    endpoints.MapHub<MessageHub>("/total");
+    endpoints.MapHub<MessageHub>("/assets");
     endpoints.MapHub<MessageHub>("/commands");
+    endpoints.MapHub<MessageHub>("/logs");
 });
 
 app.UseDefaultFiles();

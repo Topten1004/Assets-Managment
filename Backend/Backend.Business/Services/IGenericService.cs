@@ -22,6 +22,8 @@ namespace Backend.Business.Services
 
         Task DeleteAsset(int Id);
         #endregion
+
+
         #region Command
         Task<IEnumerable<CommandEntity>> GetCommandsList();
 
@@ -33,6 +35,8 @@ namespace Backend.Business.Services
 
         Task DeleteCommand(int Id);
         #endregion
+
+
         #region User
         Task<IEnumerable<UserEntity>> GetUsersList();
 
@@ -44,6 +48,8 @@ namespace Backend.Business.Services
 
         Task DeleteUser(int Id);
         #endregion
+
+
         #region Log
         Task<IEnumerable<LogEntity>> GetLogsList();
 
@@ -93,6 +99,7 @@ namespace Backend.Business.Services
         }
         #endregion
 
+
         #region Command
         public async Task<IEnumerable<CommandEntity>> GetCommandsList()
         {
@@ -120,6 +127,7 @@ namespace Backend.Business.Services
         }
         #endregion
 
+
         #region User
         public async Task<IEnumerable<UserEntity>> GetUsersList()
         {
@@ -146,6 +154,7 @@ namespace Backend.Business.Services
             await _assetRepository.DeleteUser(Id);
         }
         #endregion
+
 
         #region Logs
         public async Task<IEnumerable<LogEntity>> GetLogsList()

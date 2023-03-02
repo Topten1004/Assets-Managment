@@ -5,10 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace Backend.API.ViewModel
 {
-    public class GetAssetVM
+    public partial class GetAssetVM
     {
         [Required]
-        [JsonPropertyName("tank_name")]
+        [JsonPropertyName("tankName")]
         public string TankName { get; set; }
 
         [Required]
@@ -24,17 +24,17 @@ namespace Backend.API.ViewModel
         public float Longitude { get; set; }
 
         [Required]
-        [JsonPropertyName("longitude")]
+        [JsonPropertyName("userEmail")]
 
         public string? UserEmail { get; set; }
 
         [Required]
-        [JsonPropertyName("min_amount")]
+        [JsonPropertyName("minAmount")]
 
         public float? MinAmount { get; set; }
 
         [Required]
-        [JsonPropertyName("max_amount")]
+        [JsonPropertyName("maxAmount")]
 
         public float? MaxAmount { get; set; }
 
@@ -52,15 +52,24 @@ namespace Backend.API.ViewModel
 
         public float TotalAmount { get; set; }
 
-        public float? Longitude { get; set; }
-
-        public float? Latitude { get; set; }
+        public List<GetAssetVM> Assets { get; set; }
     }
 
-    public class BuyAsset
+    public partial class RepairAssetVM
     {
         [Required]
-        [JsonPropertyName("user_email")]
+        [JsonPropertyName("userEmail")]
+        public string UserEmail { get; set; }
+
+        [Required]
+        [JsonPropertyName("period")]
+        public int Period { get; set; }
+    }
+
+    public partial class BuyAsset
+    {
+        [Required]
+        [JsonPropertyName("userEmail")]
         public string UserEmail { get; set; }
 
         [Required]
@@ -73,10 +82,10 @@ namespace Backend.API.ViewModel
         public string From { get; set; }
     }
 
-    public class SellAsset
+    public partial class SellAsset
     {
         [Required]
-        [JsonPropertyName("user_email")]
+        [JsonPropertyName("userEmail")]
 
         public string? UserEmail { get; set; }
 
@@ -90,7 +99,7 @@ namespace Backend.API.ViewModel
 
         public string From { get; set; }
     }
-    public class PostAssetVM
+    public partial class PostAssetVM
     {
         [Required]
         public string? TankName { get; set; }
@@ -105,7 +114,7 @@ namespace Backend.API.ViewModel
         public string? UserEmail { get; set; }
         [Required]
 
-        public float? Limit { get; set; }
+        public float? MaxAmount { get; set; }
 
         [NotMapped]
         public string? Password { get; set; }
@@ -119,13 +128,6 @@ namespace Backend.API.ViewModel
         [Required]
 
         public Role role { get; set; }
-    }
-
-    public partial class TotalAssetVM
-    {
-        public float? TotalAsset { get; set; }
-
-        public int Count { get; set; }
     }
 }
 

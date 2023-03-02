@@ -29,6 +29,8 @@ namespace Backend.API.Controllers
             _messageHub = messageHub;
         }
 
+
+        #region GetLogsList
         // Method to get the list of the Logs
         [HttpGet]
         [Route("")]
@@ -40,12 +42,15 @@ namespace Backend.API.Controllers
             try
             {
                 var result = await _genericService.GetLogsList();
-                IEnumerable<LogEntity> models = _mapper.Map<IEnumerable<LogEntity>>(result);
+                List<LogVM> models = _mapper.Map<IEnumerable<LogVM>>(result).ToList();
 
-                if (result == null)
+                await _messageHub.Clients.All.SendLogs(models);
+
+                if (models == null)
                 {
                     return NotFound();
                 }
+
                 return Ok(models);
             }
             catch(Exception ex) {
@@ -56,7 +61,10 @@ namespace Backend.API.Controllers
                 return Problem(title: "/LogController/GetLogsList", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region SaveLogDetails
         [HttpPost]
         [Route("")]
         [ProducesResponseType(typeof(LogEntity), StatusCodes.Status200OK)]
@@ -91,5 +99,6 @@ namespace Backend.API.Controllers
                 return Problem(title: "/LogController/SaveLogDetail", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
     }
 }

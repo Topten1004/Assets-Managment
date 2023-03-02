@@ -38,6 +38,8 @@ namespace Backend.Controllers
             _db = db;
         }
 
+
+        #region GetAssetsList
         // Method to get the list of the Assets
         [HttpGet]
         [Route("")]
@@ -66,8 +68,46 @@ namespace Backend.Controllers
                 return Problem(title: "/Asset/GetAssetsList", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region IsRepair
         [HttpPost]
+        [Route("/IsRepair")]
+        [ProducesResponseType(typeof(Boolean), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> IsRepair(RepairAssetVM model)
+        {
+            try
+            {
+                var assets = await _genericService.GetAssetsList();
+                if (assets.Where(x => x.UserEmail == model.UserEmail).Count() == 0)
+                    return BadRequest("Can't find user email");
+
+                var asset = assets.Where(x => x.UserEmail == model.UserEmail).First();
+
+                if (DateTime.UtcNow > asset.UpdatedDate.AddDays(model.Period))
+                    return Ok(true);
+
+                else
+                    return Ok(false);
+
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Method: IsRepair, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/AssetController/IsRepair", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion
+
+
+        #region TotalAsset
+        [HttpGet]
         [Route("/TotalAsset/{UserEmail}")]
         [ProducesResponseType(typeof(AssetEntity), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -84,8 +124,8 @@ namespace Backend.Controllers
 
                 var user = users.Where(x => x.UserEmail == UserEmail).FirstOrDefault();
 
-                float longitude = 0;
-                float latitude = 0;
+                List<GetAssetVM> totalAssets = _mapper.Map<List<GetAssetVM>>(assets);
+
                 foreach (var asset in assets)
                 {
                     if (user.Role == Role.Admin)
@@ -97,18 +137,16 @@ namespace Backend.Controllers
                     {
                         if (asset.UserEmail == user.UserEmail)
                         {
-                            longitude = asset.Longitude;
-                            latitude = asset.Latitude;
                             totalAmounts += asset.Amount;
                             count++;
 
-                            var socketData = new PostTotalAsset { Count = count, TotalAmount = totalAmounts, Longitude = longitude, Latitude = latitude };
+                            var socketData = new PostTotalAsset { Count = count, TotalAmount = totalAmounts, Assets = totalAssets };
                             await _messageHub.Clients.All.SendTotalAsset(socketData);
                         }
                     }
                 }
 
-                PostTotalAsset data = new PostTotalAsset { Count = count, TotalAmount = totalAmounts, Longitude = longitude, Latitude = latitude };
+                PostTotalAsset data = new PostTotalAsset { Count = count, TotalAmount = totalAmounts, Assets = totalAssets };
                 return Ok(data);
             }
             catch(Exception ex)
@@ -120,6 +158,8 @@ namespace Backend.Controllers
                 return Problem(title: "/AssetController/TotalAsset", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+#endregion
+
 
         #region SetLimitAmount
         [HttpPost]
@@ -153,6 +193,8 @@ namespace Backend.Controllers
             }
         }
         #endregion
+
+
         #region BuyAsset
         [HttpPost]
         [Route("/BuyAsset")]
@@ -201,9 +243,58 @@ namespace Backend.Controllers
 
                 return Problem(title: "/AssetController/BuyAsset", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
-
         }
         #endregion
+
+
+        #region RepairAsset
+        [HttpGet]
+        [Route("/RepairAsset/{UserEmail}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+
+        public async Task<IActionResult> RepairAsset(string UserEmail)
+        {
+            try
+            {
+                IEnumerable<AssetEntity> assets = await _genericService.GetAssetsList();
+
+                if (assets.Where(x => x.UserEmail == UserEmail).Count() == 0)
+                    return BadRequest("Not find manager");
+
+                var asset = assets.Where(x => x.UserEmail == UserEmail).First();
+
+                LogEntity log = new LogEntity
+                {
+                    From = string.Empty,
+                    Amount = 0,
+                    TankName = asset.TankName,
+                    Type = "Repair",
+                    CreatedDate = DateTime.UtcNow,
+                    UserEmail = asset.UserEmail,
+                };
+
+                await _genericService.SaveLogDetail(log);
+
+                asset.UpdatedDate = DateTime.UtcNow;
+
+                var save = _genericService.UpdateAssetDetail(asset);
+
+                return Ok(save);
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Method: RepairAsset, Exception: {ex.Message}";
+
+                _logger.LogError(msg);
+
+                return Problem(title: "/AssetController/RepairAsset", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion
+
 
         #region SellAsset
         [HttpPost]
@@ -224,11 +315,6 @@ namespace Backend.Controllers
 
                 if (asset.Amount < model.Amount)
                     return BadRequest("Not enuogh amount to sell");
-
-
-                if ((asset.Amount - model.Amount) < asset.MinAmount)
-                    return BadRequest("Rest amount is below the min amount");
-
                 else
                 {
                     asset.Amount -= model.Amount;
@@ -245,6 +331,7 @@ namespace Backend.Controllers
 
                     await _genericService.SaveLogDetail(log);
                 }
+
                 var save = await _genericService.UpdateAssetDetail(asset);
                 return Ok(save);
             } catch(Exception ex)
@@ -258,6 +345,9 @@ namespace Backend.Controllers
 
         }
         #endregion
+
+
+        #region SaveAssetDetail
         // Method to Save the Asset detail
         [HttpPost(Name = "SaveAssetDetail")]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -281,6 +371,19 @@ namespace Backend.Controllers
                 asset.Owner = new UserEntity();
                 asset.Amount = 0;
 
+                if(assets.Count() == 0)
+                {
+                    asset.MinAmount = 0;
+                    asset.Period = 0;
+                }
+                else
+                {
+                    asset.MinAmount = assets.First().MinAmount;
+                    asset.Period = assets.First().Period;
+                }
+
+                asset.UpdatedDate = DateTime.UtcNow;
+
                 if (checkUser.Count() == 0)
                 {
                     asset.Owner.UserEmail = model.UserEmail;
@@ -302,8 +405,6 @@ namespace Backend.Controllers
                 {
                     asset.Owner = checkUser.First();
                 }
-
-                asset.UpdatedDate = DateTime.UtcNow;
 
                 var save = await _genericService.SaveAssetDetail(asset);
 
@@ -356,7 +457,10 @@ namespace Backend.Controllers
                 return Problem(title: "/AssetController/SaveAssetDetail", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region UpdateAsset
         [HttpPut]
         [Route("{id}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -392,7 +496,10 @@ namespace Backend.Controllers
                 return Problem(title: "/AssetController/UpdateAsset", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region DeleteAsset
         // Method to delete the Asset detail
         [HttpDelete(Name = "DeleteAsset")]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
@@ -416,7 +523,10 @@ namespace Backend.Controllers
                 return Problem(title: "/AssetController/DeleteAsset", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region GetCurrentUser
         private UserEntity GetCurrentUser()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -432,41 +542,9 @@ namespace Backend.Controllers
                     Role = role
                 };
             }
+
             return null;
         }
-
-        private async Task CheckAlert()
-        {
-            var commands = await _genericService.GetCommandsList();
-            var assets = await _genericService.GetAssetsList();
-            float _alertLimit = assets.First().MinAmount;
-
-            foreach (var item in assets)
-            {
-                if (item.Amount < _alertLimit)
-                {
-                    CommandEntity command = new CommandEntity();
-                    command.Command = CommandTypes.Fill;
-                    command.OwnerId = item.Owner.Id;
-                    command.TankName = item.TankName;
-                    command.Flag = false;
-
-                    await _genericService.SaveCommandDetail(command);
-
-                    #region Socket
-                    var result = await _genericService.GetCommandsList();
-                    IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
-
-                    foreach (var modelItem in models)
-                    {
-                        modelItem.UserEmail = assets.Where(x => x.TankName == modelItem.TankName).FirstOrDefault().UserEmail;
-                        modelItem.MinAmount = assets.Where(x => x.TankName == modelItem.TankName).FirstOrDefault().MinAmount;
-                        modelItem.MaxAmount = assets.Where(x => x.TankName == modelItem.TankName).FirstOrDefault().MaxAmount;
-                    }
-                    await _messageHub.Clients.All.SendCommands(models.ToList());
-                    #endregion
-                }
-            }
-        }
+        #endregion
     }
 }

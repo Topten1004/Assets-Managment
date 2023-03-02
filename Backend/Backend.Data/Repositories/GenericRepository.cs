@@ -18,6 +18,7 @@ namespace Backend.Data.Repositories
         Task DeleteAsset(int Id);
         #endregion
 
+
         #region Command
         Task<IEnumerable<CommandEntity>> GetCommandsList();
         Task<CommandEntity> GetCommandDetailById(int Id);
@@ -26,6 +27,7 @@ namespace Backend.Data.Repositories
         Task DeleteCommand(int Id);
         #endregion
 
+
         #region User
         Task<IEnumerable<UserEntity>> GetUsersList();
         Task<UserEntity> GetUserDetailById(int Id);
@@ -33,6 +35,7 @@ namespace Backend.Data.Repositories
         Task<UserEntity> UpdateUserDetail(UserEntity model);
         Task DeleteUser(int Id);
         #endregion
+
 
         #region Log
         Task<IEnumerable<LogEntity>> GetLogsList();
@@ -89,6 +92,7 @@ namespace Backend.Data.Repositories
 
         #endregion
 
+
         #region Command
         public async Task<IEnumerable<CommandEntity>> GetCommandsList()
         {
@@ -126,6 +130,7 @@ namespace Backend.Data.Repositories
         }
         #endregion
 
+
         #region User
         public async Task<IEnumerable<UserEntity>> GetUsersList()
         {
@@ -162,6 +167,7 @@ namespace Backend.Data.Repositories
             }
         }
         #endregion
+
 
         #region Log
         public async Task<IEnumerable<LogEntity>> GetLogsList()

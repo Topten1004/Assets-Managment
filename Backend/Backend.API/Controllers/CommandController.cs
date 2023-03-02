@@ -32,6 +32,7 @@ namespace Backend.API.Controllers
             _messageHub = messageHub;
         }
 
+        #region GetCommandsList
         // Method to get the list of the Commands
         [HttpGet]
         [Route("")]
@@ -58,7 +59,10 @@ namespace Backend.API.Controllers
                 return Problem(title: "/CommandController/GetCommandsList", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
+
+        #region SaveCommandDetail
         // Method to Save the Command detail
         [HttpPost(Name = "SaveCommandDetail")]
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
@@ -110,8 +114,11 @@ namespace Backend.API.Controllers
                 return Problem(title: "/CommandController/SaveCommandDetail", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }            
         }
+        #endregion
 
 
+        #region UpdateCommand
+        // Update Command Method
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(typeof(CommandEntity), StatusCodes.Status200OK)]
@@ -159,8 +166,11 @@ namespace Backend.API.Controllers
                 return Problem(title: "/CommandController/UpdateCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
 
-        // Method to delete the Asset detail
+
+        #region DeleteCommand
+        // Method to delete the Command detail
         [HttpDelete(Name = "DeleteCommand")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -181,5 +191,6 @@ namespace Backend.API.Controllers
                 return Problem(title: "/CommandController/UpdateCommand", detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError);
             }
         }
+        #endregion
     }
 }

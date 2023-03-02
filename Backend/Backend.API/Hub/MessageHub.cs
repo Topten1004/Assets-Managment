@@ -2,6 +2,7 @@
 using Backend.API.ViewModel;
 using Backend.Business.Services;
 using Backend.Data;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.Json;
 
@@ -24,6 +25,13 @@ namespace Backend.Controllers
             await Clients.All.SendCommands(commands);
         }
 
+        public async Task SendLogs(List<LogVM> logs)
+        {
+            logs = logs.OrderBy(x => x.CreatedDate).ToList();
+
+            await Clients.All.SendLogs(logs);
+        }
+
         public async Task SendTotalAsset(PostTotalAsset model)
         {
             await Clients.All.SendTotalAsset(model);
@@ -35,18 +43,20 @@ namespace Backend.Controllers
             var result = await _genericService.GetCommandsList();
             var assets = await _genericService.GetAssetsList();
 
-            IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
-
-            foreach(var item in models)
+            if (result.Count() > 0)
             {
-                item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
-                item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
-                item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+                IEnumerable<SocketCommandVM> models = _mapper.Map<IEnumerable<SocketCommandVM>>(result);
 
+                foreach (var item in models)
+                {
+                    item.UserEmail = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().UserEmail;
+                    item.MinAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MinAmount;
+                    item.MaxAmount = assets.Where(x => x.TankName == item.TankName).FirstOrDefault().MaxAmount;
+
+                }
+
+                await Clients.All.SendCommands(models.ToList());
             }
-
-            await Clients.All.SendCommands(models.ToList());
-
             return base.OnConnectedAsync(); 
         }
     }
