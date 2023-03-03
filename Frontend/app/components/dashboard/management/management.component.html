@@ -1,0 +1,121 @@
+<div class="management-main">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#buyOil"> Buy </button>
+    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#sellOil"> Sell </button>
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#repairModal"> Repair </button>
+
+    <div class="modal" id="buyOil">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Buy Oil</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+
+            <div class="mb-3 mt-3">
+              <label for="manager" class="form-label">Amount:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="buyAmount"
+                name="buyAmount"
+                [value]="buyAmount"
+                (change)="onBuyAmount($event)"
+              >
+            </div>
+            <div class="mb-3 mt-3">
+              <label for="manager" class="form-label">From:</label>
+              <input
+                type="string"
+                class="form-control"
+                id="name"
+                name="name"
+                [value]="buyer"
+                (change)="onChangeBuyer($event)"
+              >
+            </div>
+
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onBuyOil()">Buy</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="sellOil">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Sell Oil</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+
+            <div class="mb-3 mt-3">
+              <label for="manager" class="form-label">Amount:</label>
+              <input
+                type="number"
+                class="form-control"
+                id="sellAmount"
+                name="sellAmount"
+                [value]="sellAmount"
+                (change)="onSellAmount($event)"
+              >
+            </div>
+            <div class="mb-3 mt-3">
+              <label for="manager" class="form-label">To:</label>
+              <input
+                type="string"
+                class="form-control"
+                id="name"
+                name="name"
+                [value]="seller"
+                (change)="onChangeSeller($event)"
+              >
+            </div>
+
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onSellOil()">Sell</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="repairModal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Repair Tank</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onRepair()">Confirm</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+</div>

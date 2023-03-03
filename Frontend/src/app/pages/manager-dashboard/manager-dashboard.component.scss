@@ -1,0 +1,47 @@
+.manager-dashboard-main {
+  .row {
+    height: 450px;
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .col-sm-2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .col-sm-4 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .col-sm-6 {
+    overflow: scroll;
+    height: calc(100% - 90px);
+    padding-bottom: 50px;
+  }
+  .overview {
+    width: 100%;
+  }
+  .management {
+    width: 100%;
+  }
+  .alert {
+    display: flex;
+    align-items: center;
+  }
+  .confirm-btn {
+    display: flex;
+    margin-left: auto;
+  }
+  .name {
+    margin-right: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .name {
+    margin-right: 50px !important;
+  }
+}

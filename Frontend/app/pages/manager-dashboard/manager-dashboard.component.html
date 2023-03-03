@@ -1,0 +1,36 @@
+<div class="manager-dashboard-main">
+  <div class="row gy-3">
+    <div class="col-sm-12">
+      <div *ngFor="let item of notify_list; let i = index">
+        <div
+          *ngIf="item.userEmail === userEmail && item.flag === false"
+          class="alert"
+          [ngClass]="item.flag ? 'alert-primary' : 'alert-danger'"
+        >
+          <div class="name">
+            {{item.tankName}}
+          </div>
+          <div>
+            {{item.command}}
+          </div>
+          <div class="confirm-btn">
+            <button class="btn btn-success" (click)="confirmNotify(item)"> Confirm </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="overview">
+        <app-overview></app-overview>
+      </div>
+      <div class="management">
+        <app-management (newSellEvent)="sellEventHandler($event)" (newBuyEvent)="buyEventHandler($event)" [command_list]="notify_list" ></app-management>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <app-logs-list></app-logs-list>
+    </div>
+  </div>
+</div>

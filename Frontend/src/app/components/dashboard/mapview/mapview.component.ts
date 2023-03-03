@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 
-import data from 'src/json/data.json' ;
 import { getName, getCode } from 'country-list';
 import { MapTypeStyle } from '@agm/core';
+import axios from 'axios';
+import { PRIVATE_URI } from 'src/app/constant/static';
+import { authorization, formatDBDate } from 'src/app/utils/helper';
 
 @Component({
   selector: 'app-mapview',
@@ -11,29 +13,66 @@ import { MapTypeStyle } from '@agm/core';
   styleUrls: ['./mapview.component.scss']
 })
 
-export class MapviewComponent implements OnInit {
+export class MapviewComponent implements OnInit, OnChanges {
+  // tank assets list
+  @Input() listData: Array<any> = [];
 
+  //selected item on asset-list
+  @Input() centerIndex: number = -1;
 
+  //customize listData
   points : Array<any> = [] ;
+  isRepair: Array<boolean> = [];
 
-  isShowDataInfo :boolean = false ;
-  zoom: number = 1;
+  //view logs
+  logList: Array<any> = [];
+  viewDetail: boolean = false;
+
+  //check command(fill or repair)
+  select_fill_oil_cmd : boolean = false;
+  select_repair_tank_cmd : boolean = false;
+
+  //selected item on map
+  index: number = 0;
+
+  zoom: number = 1.8;
   current_opened_index : number = -1 ;
 
-  // isShowDataInfo : boolean = false ;
-  current_info : any ;
-
   // initial center position for the map
-  ct_lat: number = 0;
-  ct_lng: number = 0;
+  ct_lat: number = 53.65914;
+  ct_lng: number = 0.072050;
 
-  labelOptions = {
+  labelOptions = [{
       color: 'white',
       fontFamily: 'bold',
       fontSize: '18px',
       fontWeight: 'bold',
       text: "87"
-  }
+  },{
+    color: 'white',
+    fontFamily: 'bold',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    text: "87"
+},{
+  color: 'white',
+  fontFamily: 'bold',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  text: "87"
+},{
+  color: 'white',
+  fontFamily: 'bold',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  text: "87"
+},{
+  color: 'white',
+  fontFamily: 'bold',
+  fontSize: '18px',
+  fontWeight: 'bold',
+  text: "87"
+  }]
 
   endpoints_arr : Array<any> = [];
 
@@ -200,45 +239,150 @@ export class MapviewComponent implements OnInit {
     }
   ]
 
+  async ngOnInit() {
+    const header = authorization();
+
+    const res =  await axios.get(`${PRIVATE_URI}Command`, header);
+  }
+
+  async ngOnChanges(changes:SimpleChanges) {
+    let options = [];
+
+    for(let i = 0 ; i < this.listData.length ; i++) {
+      options.push({
+        color: 'white',
+        fontFamily: 'bold',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        text: String(this.listData[i].amount)
+      })
+    }
+
+    let tank_data = [];
+    for (let i = 0 ; i < this.listData.length ; i++) {
+      tank_data.push({
+          "endpoint": "185.155.103.59",
+          "country_code": "DE",
+          "is_block": 1,
+          "latitude": this.listData[i].latitude,
+          "longitude": this.listData[i].longitude,
+          "minAmount": this.listData[i].minAmount,
+          "userName": this.listData[i].tankName,
+          'userEmail': this.listData[i].userEmail,
+          "period": this.listData[i].period
+      })
+    }
+    this.labelOptions = options;
+    this.points = tank_data;
+
+    await this.checkedRepair();
+  }
+
   isOpened(index : number) {
     if(index === this.current_opened_index) return true;
     return false;
-  }
-
-  showEndpointInfo(data: any) {
-    this.current_info = data;
-    // this.isShowDataInfo = true ;
-
-    console.log(data);
-    return ;
   }
 
   clickedMarker(label: string, index: number) {
     this.current_opened_index = index;
   }
 
+  handleOpenModal(i: number) {
+    this.index = i;
+    this.viewDetail = false;
+    (<any>$("#tankSituation")).modal('show')
+  }
+
   getCountryName(code : string) {
     return getName(code) ;
   }
 
+  stringToNumber(value: string) {
+    return Number(value)
+  }
+
   constructor() {
-    this.points = data;
     this.JSON_MAP_STYLES.forEach((style:any) => {
       this.Styles.push(style);
     })
-    // if(Array.isArray(endpointsMap)) {
-    //   endpointsMap.map((item) => {
-    //     this.endpoints_arr.push({
-    //       ...item,
-    //       country_name : this.getCountryName(item.country_code),
-    //       flag_path : `http://purecatamphetamine.github.io/country-flag-icons/3x2/${item.country_code}.svg`
-    //     })
-    //   })
-    //   console.log('dfdf');
-    // }
   }
 
-  ngOnInit(): void {
+  async submitCommand() {
+    const header = authorization();
+
+
+    if(this.select_fill_oil_cmd ) {
+      try {
+
+        const res =  await axios.post(`${PRIVATE_URI}Command`, {
+          tankName: this.listData[this.index].tankName,
+          command: 'Fill'
+        }, header)
+
+        if(res.status === 200) {
+          this.select_fill_oil_cmd = false;
+          alert("Successfully notified Fill")
+        }
+      } catch(error){
+        this.select_fill_oil_cmd = false;
+        alert("You already notified Fill")
+      }
+    }
+
+    if(this.select_repair_tank_cmd ) {
+      try{
+        const res =  await axios.post(`${PRIVATE_URI}Command`, {
+          tankName: this.listData[this.index].tankName,
+          command: 'Repair'
+        }, header)
+
+        if(res.status === 200) {
+          this.select_repair_tank_cmd = false;
+          alert("Successfully notified Repair")
+        }
+      } catch(error){
+        this.select_repair_tank_cmd = false;
+        alert("You already notified Repair")
+      }
+    }
+
+  }
+
+  async checkedRepair() {
+
+    const header = authorization();
+
+    for(let i = 0 ; i < this.points.length ; i++) {
+      let res = await axios.post(`${PRIVATE_URI}IsRepair`, {
+        userEmail: this.points[i].userEmail,
+        period: this.points[i].period,
+      }, header);
+
+      if(res.status === 200) {
+        this.isRepair[i] = true;
+      } else {
+        this.isRepair[i] = false;
+      }
+    }
+
+  }
+
+  async onViewDetail() {
+    this.viewDetail = !this.viewDetail;
+    this.logList = [];
+    const header = authorization();
+
+    let res = await axios.get(`${PRIVATE_URI}Log`, header);
+
+    if(res.status === 200) {
+      for( let i = res.data.length-1 ; i >= 0 ; i--) {
+        if(res.data[i].userEmail === this.listData[this.index].userEmail)
+          this.logList.push(res.data[i])
+      }
+    }
+  }
+  changeDateType(db_date: any) {
+    return formatDBDate(db_date)
   }
 
 }
