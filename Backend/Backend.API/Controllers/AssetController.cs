@@ -87,7 +87,8 @@ namespace Backend.Controllers
 
                 var asset = assets.Where(x => x.UserEmail == model.UserEmail).First();
 
-                if (DateTime.UtcNow > asset.UpdatedDate.AddDays(model.Period))
+                var checkDate = asset.UpdatedDate;
+                if (DateTime.UtcNow > checkDate.AddDays(model.Period))
                     return Ok(true);
 
                 else
@@ -176,7 +177,6 @@ namespace Backend.Controllers
                 {
                     item.Period = model.Period;
                     item.MinAmount = model.MinAmount;
-                    item.UpdatedDate = DateTime.UtcNow;
 
                     await _genericService.UpdateAssetDetail(item);
                 }

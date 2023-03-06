@@ -18,7 +18,7 @@
             [longitude]="point.longitude"
             [markerDraggable]="point.is_block ? true : false"
             [label]="labelOptions[i]"
-            [iconUrl]="stringToNumber(labelOptions[i].text) >= point.minAmount ? isRepair[i] ? './assets/images/map-marker-enable.png' : './assets/images/repair.png' : './assets/images/alert.gif'"
+            [iconUrl]="stringToNumber(labelOptions[i].text) >= point.minAmount ? isRepair[i] ? './assets/images/repair.png' : './assets/images/map-marker-enable.png' : './assets/images/alert.gif'"
         >
 
           <div style="width : 50px; height:50px; border: 1px solid red;"></div>
@@ -36,7 +36,7 @@
 
               </div>
               <div class="agm-info-body">
-                {{point.endpoint}}
+                {{point.latitude}}, {{point.longitude}}
               </div>
             </div>
           </agm-info-window>
@@ -145,7 +145,7 @@
                 <tr *ngFor="let item of logList; let i = index">
                   <td> {{item.type}} </td>
                   <td> {{item.from}} </td>
-                  <td> {{item.amount}} </td>
+                  <td> {{item.amount || ''}} </td>
                   <td> {{changeDateType(item.createdDate)}} </td>
                 </tr>
               </tbody>

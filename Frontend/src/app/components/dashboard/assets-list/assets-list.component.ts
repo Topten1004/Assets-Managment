@@ -81,4 +81,18 @@ export class AssetsListComponent implements OnInit, OnChanges {
   changeDateType(db_date: any) {
     return formatDBDate(db_date)
   }
+
+  transform(items: any[], searchText: string): any[] {
+    if (!items) {
+      return [];
+    }
+    if (!searchText) {
+      return items;
+    }
+    searchText = searchText.toLocaleLowerCase();
+
+    return items.filter(it => {
+      return it.tankName.toLocaleLowerCase().includes(searchText);
+    });
+  }
 }

@@ -1,12 +1,17 @@
 <div class="assets-list-main">
-  <select class="form-select form-select-md">
+  <!-- <select class="form-select form-select-md">
     <option>All Sites</option>
-  </select>
+  </select> -->
 
   <div class="row">
     <div class="col col-sm-6">
       <div class="input-group mb-3 mt-3">
-        <input type="text" class="form-control" placeholder="Enter location." [value]="">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter location."
+          [(ngModel)]="search_text"
+        >
         <button class="btn btn-outline-dark">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -22,24 +27,26 @@
   </div>
 
   <div class="list">
-    <div class="list-item" *ngFor="let item of perPageList; let i = index" (click)="onChangeIndex(i)">
-      <div class="asset-info">
-        <p class="asset-id">
-          {{item.tankName}}
-        </p>
-        <p class="asset-desc">
-          Load Carner: Gearbox, WT28
-        </p>
-      </div>
-      <div>
-        <p class="asset-location">
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-          Rotter dam, Harbour
-        </p>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#commandSend">
-          detail
-        </button>
-      </div>
+    <div class="list-item" *ngFor="let item of transform(perPageList, search_text); let i = index" (click)="onChangeIndex(i)">
+      <!-- <div class="list-item" *ngIf="item.tankName.toLowerCase().search(search_text) >= 0"> -->
+          <div class="asset-info" >
+            <p class="asset-id">
+              {{item.tankName}}
+            </p>
+            <!-- <p class="asset-desc">
+              Load Carner: Gearbox, WT28
+            </p> -->
+          </div>
+          <div>
+            <!-- <p class="asset-location">
+              <svg xmlns="http://www.w3.org/2000/svg" height="1.5rem" viewBox="0 0 24 24" width="1.5rem" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              Rotter dam, Harbour
+            </p> -->
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#commandSend">
+              detail
+            </button>
+          </div>
+      <!-- </div> -->
     </div>
     <div class="list-footer">
       <p class="label">Rows Per Page</p>
@@ -148,7 +155,7 @@
               <tr *ngFor="let item of logList; let i = index">
                 <td> {{item.type}} </td>
                 <td> {{item.from}} </td>
-                <td> {{item.amount}} </td>
+                <td> {{item.amount || ''}} </td>
                 <td> {{changeDateType(item.createdDate)}} </td>
               </tr>
             </tbody>

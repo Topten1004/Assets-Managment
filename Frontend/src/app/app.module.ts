@@ -3,7 +3,7 @@ import { AgmCoreModule } from '@agm/core';
 import { AngularCountriesFlagsModule } from 'angular-countries-flags'
 import { AgmJsMarkerClustererModule } from '@agm/js-marker-clusterer';
 import { MapsAllModule } from '@syncfusion/ej2-angular-maps';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { BrowserModule } from '@angular/platform-browser';
 import * as $ from 'jquery';
@@ -51,6 +51,7 @@ import { LogsListComponent } from './components/dashboard/logs-list/logs-list.co
   ],
   imports: [
     ReactiveFormsModule,
+    FormsModule,
     MapsAllModule,
     BrowserModule,
     AngularCountriesFlagsModule,

@@ -240,6 +240,7 @@ export class MapviewComponent implements OnInit, OnChanges {
   ]
 
   async ngOnInit() {
+    // this.getCity(this.ct_lat, this.ct_lng)
     const header = authorization();
 
     const res =  await axios.get(`${PRIVATE_URI}Command`, header);
@@ -261,7 +262,6 @@ export class MapviewComponent implements OnInit, OnChanges {
     let tank_data = [];
     for (let i = 0 ; i < this.listData.length ; i++) {
       tank_data.push({
-          "endpoint": "185.155.103.59",
           "country_code": "DE",
           "is_block": 1,
           "latitude": this.listData[i].latitude,
@@ -359,9 +359,8 @@ export class MapviewComponent implements OnInit, OnChanges {
       }, header);
 
       if(res.status === 200) {
-        this.isRepair[i] = true;
-      } else {
-        this.isRepair[i] = false;
+        console.log(res.data)
+        this.isRepair[i] = res.data;
       }
     }
 
@@ -385,4 +384,19 @@ export class MapviewComponent implements OnInit, OnChanges {
     return formatDBDate(db_date)
   }
 
+  // async getCity(lat: number, lng: number) {
+  //   xhr.open('GET', "https://us1.locationiq.com/v1/reverse.php?key=AIzaSyAvKu990uAaoiCk_URypgdgFTa4kdn_MBw&lat=" + lat + "&lon=" + lng + "&format=json", true);
+  //   xhr.send();
+  //   xhr.onreadystatechange = processRequest;
+  //   xhr.addEventListener("readystatechange", processRequest, false);
+
+  //   function processRequest(e: any) {
+  //       if (xhr.readyState == 4 && xhr.status == 200) {
+  //           var response = JSON.parse(xhr.responseText);
+  //           var city = response.address.city;
+  //           console.log(city);
+  //           return;
+  //       }
+  //   }
+  // }
 }
