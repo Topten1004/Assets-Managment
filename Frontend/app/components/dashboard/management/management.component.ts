@@ -72,7 +72,8 @@ export class ManagementComponent implements OnInit, OnChanges {
               alert("Successfully purchased")
               fillCount++;
             }) .catch(function (error) {
-              alert(error.response.data.title)
+              // alert(error.response.data.title)
+              console.log(error)
             })
 
         if(fillCount !== 0)
@@ -80,7 +81,9 @@ export class ManagementComponent implements OnInit, OnChanges {
               .then(async function(res) {
                 await axios.get(`${PRIVATE_URI}TotalAsset/${command.userEmail}`, header)
                 .then(function() {console.log('asdfsfd')})
-                .catch(function(error) { console.log(error.response.data.title)})
+                .catch(function(error) {
+                  console.log(error.response.data.title)
+                })
               })
 
       }
@@ -98,6 +101,7 @@ export class ManagementComponent implements OnInit, OnChanges {
         await axios.get(`${PRIVATE_URI}TotalAsset/${user_email}`, header)
       }) .catch(function(error) {
         alert(error.response.data.title)
+        console.log(error)
       })
     }
   }
