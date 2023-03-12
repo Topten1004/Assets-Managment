@@ -12,7 +12,7 @@ var app = builder.Build();
 
 startup.Configure(app, builder.Environment);
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
